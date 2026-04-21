@@ -58,3 +58,4 @@ out/
 # --- Project Specific ---
 postgres_data/
 redis_data/
+implementation_plan.md

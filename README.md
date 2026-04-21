@@ -1,3 +1,77 @@
+<<<<<<< HEAD
+# NeuralKnot // Medical Intelligence Orchestration
+
+NeuralKnot is a high-performance, polyglot microservices ecosystem designed to revolutionize medical triage and appointment scheduling. By merging robust Spring Boot backend services with state-of-the-art AI reasoning, it provides an autonomous assistant capable of diagnosing symptoms, identifying specialists, and orchestrating complex booking workflows.
+
+---
+
+## 🚀 Core Architecture
+
+The system is architected as a decoupled microservices environment orchestrated via Docker:
+
+- **Gateway Service (`hospitalManagement`)**: The primary API gateway handling authentication (JWT), RBAC, patient records, and secure proxying.
+- **Intelligence Service (`ai-service`)**: A specialized Spring AI microservice that executes reasoning loops, tool-calling (via Groq/OpenAI), and session-based state management.
+- **State Layer**: 
+    - **PostgreSQL**: Hard persistence for users, doctors, and appointments.
+    - **Redis**: High-speed ephemeral storage for AI conversation history and triage states.
+
+---
+
+## 🔄 The Complete Flow
+
+NeuralKnot follows a strictly defined "Triage-to-Booking" cycle:
+
+1.  **Symptom Analysis**: The user describes their condition. The AI identifies the medical specialization and requests a preferred time.
+2.  **Slot Discovery**: The AI calls the `getAvailableDoctors` tool, which queries the Hospital API for real-time availability based on doctor shifts and existing appointments.
+3.  **Structured Intent**: 
+    - If doctors are found, the AI appends a `[DOCTORS: ...]` JSON tag.
+    - Once a selection is confirmed, it appends a `[BOOKING_READY: ...]` tag containing all necessary IDs and metadata.
+4.  **Client Execution**: The frontend intercepts these tags to display rich UI components (selection lists/confirmation cards) and executes the final booking POST to the Hospital API.
+
+---
+
+## 🛠️ API Reference
+
+### 1. Authentication (`hospital-app`)
+| Endpoint | Method | Description |
+| :--- | :--- | :--- |
+| `/api/v1/auth/signup` | `POST` | Register a new patient or user. |
+| `/api/v1/auth/login` | `POST` | Authenticate and receive a JWT. |
+
+### 2. AI & Triage (`hospital-app` -> `ai-service`)
+| Endpoint | Method | Description |
+| :--- | :--- | :--- |
+| `/api/v1/ai/query` | `POST` | Primary chat endpoint. Proxies to AI Service with JWT. |
+| `/ai/session/{id}` | `DELETE` | Clear conversation history for a specific session. |
+
+### 3. Patient Operations (`hospital-app`)
+| Endpoint | Method | Description |
+| :--- | :--- | :--- |
+| `/api/v1/patients/appointments` | `POST` | Book a confirmed appointment (Requires JWT). |
+| `/api/v1/patients/profile` | `GET` | Retrieve logged-in patient details. |
+
+### 4. Public Discovery (`hospital-app`)
+| Endpoint | Method | Description |
+| :--- | :--- | :--- |
+| `/api/v1/public/doctors` | `GET` | List doctors by specialization. |
+| `/api/v1/public/doctors/available` | `GET` | Filter doctors by shift and real-time availability. |
+
+---
+
+## ⚙️ Environment Configuration
+
+Ensure the following variables are defined in your `.env` file:
+
+```bash
+# AI Service Config
+GROQ_API_KEY=your_api_key_here
+HOSPITAL_SERVICE_URL=http://hospital-app:8080
+REDIS_HOST=redis
+
+# Hospital Management Config
+SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/hospital_db
+JWT_SECRET=your_ultra_secure_secret
+=======
 # Nexus · Agentic Medical Intelligence
 
 > An autonomous AI agent that reasons over symptoms, orchestrates tool calls, and drives end-to-end appointment booking — without human intervention at each step.
@@ -155,17 +229,32 @@ REDIS_HOST=redis
 # ── Gateway Service ──────────────────────────────────
 SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/hospital_db
 JWT_SECRET=your_secret_min_256_bits          # Never commit this
+>>>>>>> a1bc1a32ed6c05a974640afbf74a88a490770d8c
 AI_SERVICE_URL=http://hospital-ai:8081
 ```
 
 ---
 
+<<<<<<< HEAD
+## 🏗️ Getting Started
+
+Spin up the entire intelligence stack with a single command:
+=======
 ## Running the Stack
+>>>>>>> a1bc1a32ed6c05a974640afbf74a88a490770d8c
 
 ```bash
 docker-compose up --build
 ```
 
+<<<<<<< HEAD
+Nodes will initialize in sequence: **Postgres -> Redis -> Hospital App -> AI Service**.
+
+---
+
+> [!NOTE]
+> For Starboy-level aesthetics and high-performance tuning, refer to the **Apex Pulse** optimization internal docs.
+=======
 Initialization order is dependency-resolved:
 
 ```
@@ -202,3 +291,4 @@ nexus/
 | Tool Protocol | Spring AI Function Calling |
 
 ---
+>>>>>>> a1bc1a32ed6c05a974640afbf74a88a490770d8c

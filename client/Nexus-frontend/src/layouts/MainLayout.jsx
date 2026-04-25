@@ -18,7 +18,7 @@ export default function MainLayout() {
     const items = []
     if (roles.includes('PATIENT')) {
       items.push({ to: '/dashboard', icon: 'group', label: 'My Profile' })
-      items.push({ to: '/chat', icon: 'psychology', label: 'Intelligence', isActiveClass: 'text-orange-500 bg-orange-500/10 border-r-[3px] border-orange-500' })
+      items.push({ to: '/chat', icon: 'psychology', label: 'Intelligence', isActiveClass: 'text-teal-600 bg-teal-600/10 border-r-[3px] border-teal-600' })
     }
     
     if (roles.includes('DOCTOR')) {
@@ -35,22 +35,22 @@ export default function MainLayout() {
   const navItems = getNavItems()
 
   return (
-    <div className="bg-stone-950 text-stone-200 font-body-sm overflow-hidden h-screen w-screen flex relative">
+    <div className="bg-slate-50 text-slate-800 font-body-sm overflow-hidden h-screen w-screen flex relative">
       
       {/* Base Background Overlay */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.02]"
            style={{ backgroundImage: noiseSvg, backgroundRepeat: 'repeat', backgroundSize: '200px 200px' }} />
 
       {/* SideNavBar */}
-      <nav className="relative z-50 w-64 h-full border-r border-white/[0.05] bg-black/60 backdrop-blur-2xl flex flex-col py-8 shadow-[10px_0_30px_rgba(0,0,0,0.5)]">
+      <nav className="relative z-50 w-64 h-full border-r border-slate-200 bg-white backdrop-blur-2xl flex flex-col py-8 shadow-[10px_0_30px_rgba(0,0,0,0.5)]">
         {/* Header */}
         <div className="px-6 mb-10 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl overflow-hidden border border-orange-500/30 bg-orange-500/10 flex items-center justify-center shadow-[0_0_15px_rgba(249,115,22,0.15)]">
-             <span className="material-symbols-outlined text-orange-500">medical_services</span>
+          <div className="w-10 h-10 rounded-xl overflow-hidden border border-teal-600/30 bg-teal-600/10 flex items-center justify-center shadow-[0_0_15px_rgba(13,148,136,0.15)]">
+             <span className="material-symbols-outlined text-teal-600">medical_services</span>
           </div>
           <div>
-            <h1 className="text-white font-bold text-xl tracking-[0.2em] font-headline-md leading-none mb-1">NEXUS</h1>
-            <p className="font-mono text-[10px] uppercase tracking-widest text-orange-500/70">Terminal v4.2</p>
+            <h1 className="text-slate-900 font-bold text-xl tracking-[0.2em] font-headline-md leading-none mb-1">NEXUS</h1>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-teal-600/70">Terminal v4.2</p>
           </div>
         </div>
 
@@ -63,15 +63,15 @@ export default function MainLayout() {
               className={({ isActive }) => 
                 `flex items-center gap-3 px-6 py-4 transition-all font-mono text-[11px] uppercase tracking-[0.15em] group relative ${
                   isActive 
-                    ? item.isActiveClass || 'text-orange-500 bg-orange-500/10 border-r-[3px] border-orange-500' 
-                    : 'text-stone-500 hover:bg-white/5 hover:text-stone-200 border-r-[3px] border-transparent'
+                    ? item.isActiveClass || 'text-teal-600 bg-teal-600/10 border-r-[3px] border-teal-600' 
+                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800 border-r-[3px] border-transparent'
                 }`
               }
             >
               {({ isActive }) => (
                 <>
                   <span 
-                    className={`material-symbols-outlined ${!isActive && 'group-hover:text-stone-300 transition-colors'}`}
+                    className={`material-symbols-outlined ${!isActive && 'group-hover:text-slate-700 transition-colors'}`}
                     style={isActive ? { fontVariationSettings: "'FILL' 1" } : {}}
                   >
                     {item.icon}
@@ -88,7 +88,7 @@ export default function MainLayout() {
           <div className="px-6 mb-8">
             <button 
               onClick={() => navigate('/chat')}
-              className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-semibold text-xs tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(249,115,22,0.2)] hover:shadow-[0_0_30px_rgba(249,115,22,0.4)]"
+              className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 text-slate-900 font-semibold text-xs tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(13,148,136,0.2)] hover:shadow-[0_0_30px_rgba(13,148,136,0.4)]"
             >
               <span className="material-symbols-outlined text-[18px]">psychology</span>
               START TRIAGE
@@ -97,12 +97,12 @@ export default function MainLayout() {
         )}
 
         {/* Footer Links */}
-        <div className="flex flex-col border-t border-white/[0.05] pt-4">
-          <button className="flex items-center gap-3 px-6 py-4 text-stone-500 hover:bg-white/5 hover:text-stone-200 transition-all active:scale-[0.98] font-mono text-[11px] uppercase tracking-[0.15em] group">
+        <div className="flex flex-col border-t border-slate-200 pt-4">
+          <button className="flex items-center gap-3 px-6 py-4 text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all active:scale-[0.98] font-mono text-[11px] uppercase tracking-[0.15em] group">
             <span className="material-symbols-outlined text-[18px]">settings</span>
             <span>Settings</span>
           </button>
-          <button onClick={handleLogout} className="flex items-center gap-3 px-6 py-4 text-stone-500 hover:bg-white/5 hover:text-stone-200 hover:text-red-400 transition-all active:scale-[0.98] font-mono text-[11px] uppercase tracking-[0.15em] group cursor-pointer">
+          <button onClick={handleLogout} className="flex items-center gap-3 px-6 py-4 text-slate-500 hover:bg-slate-50 hover:text-slate-800 hover:text-red-400 transition-all active:scale-[0.98] font-mono text-[11px] uppercase tracking-[0.15em] group cursor-pointer">
             <span className="material-symbols-outlined text-[18px]">logout</span>
             <span>Logout</span>
           </button>
@@ -110,10 +110,10 @@ export default function MainLayout() {
       </nav>
 
       {/* TopAppBar */}
-      <header className="fixed top-0 right-0 left-64 h-16 flex justify-between items-center px-8 z-40 bg-black/40 backdrop-blur-md border-b border-white/[0.05]">
+      <header className="fixed top-0 right-0 left-64 h-16 flex justify-between items-center px-8 z-40 bg-white shadow-sm backdrop-blur-md border-b border-slate-200">
         <div className="flex items-center gap-4">
            {/* Breadcrumb or title could go here */}
-           <span className="font-mono text-xs text-stone-500 tracking-widest uppercase terminal-cursor">_SYSTEM_ONLINE</span>
+           <span className="font-mono text-xs text-slate-500 tracking-widest uppercase terminal-cursor">_SYSTEM_ONLINE</span>
         </div>
         <div className="flex items-center gap-6">
           {/* Status Badge */}
@@ -124,11 +124,11 @@ export default function MainLayout() {
             </span>
           </div>
           {/* Action Icons */}
-          <div className="flex items-center gap-3 border-l border-white/10 pl-6">
-            <button className="text-stone-500 hover:text-stone-200 p-2 rounded-lg hover:bg-white/5 transition-all">
+          <div className="flex items-center gap-3 border-l border-slate-200 pl-6">
+            <button className="text-slate-500 hover:text-slate-800 p-2 rounded-lg hover:bg-slate-50 transition-all">
               <span className="material-symbols-outlined text-[20px]">notifications</span>
             </button>
-            <button className="text-stone-500 hover:text-stone-200 p-2 rounded-lg hover:bg-white/5 transition-all">
+            <button className="text-slate-500 hover:text-slate-800 p-2 rounded-lg hover:bg-slate-50 transition-all">
               <span className="material-symbols-outlined text-[20px]">account_circle</span>
             </button>
           </div>
@@ -136,9 +136,9 @@ export default function MainLayout() {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 mt-16 h-[calc(100vh-4rem)] flex flex-col relative z-10 overflow-hidden bg-stone-950">
+      <main className="flex-1 mt-16 h-[calc(100vh-4rem)] flex flex-col relative z-10 overflow-hidden bg-slate-50">
          {/* Background Glows */}
-         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-orange-500/5 blur-[120px] rounded-full pointer-events-none"></div>
+         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-teal-600/5 blur-[120px] rounded-full pointer-events-none"></div>
          <div className="absolute bottom-[10%] right-[-10%] w-[40%] h-[40%] bg-teal-500/5 blur-[100px] rounded-full pointer-events-none"></div>
          
          <div className="flex-1 overflow-auto p-8 relative z-20">

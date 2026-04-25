@@ -28,12 +28,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-200 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col items-center justify-center p-6 relative overflow-hidden">
       
       {/* Background Layers */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.1) 0%, transparent 70%)' }} />
+          style={{ background: 'radial-gradient(circle, rgba(13,148,136,0.1) 0%, transparent 70%)' }} />
         <div className="absolute inset-0 opacity-[0.025]"
           style={{ backgroundImage: noiseSvg, backgroundRepeat: 'repeat', backgroundSize: '200px 200px' }} />
         <div className="absolute inset-0"
@@ -46,21 +46,21 @@ export default function LoginPage() {
       <div className="z-10 w-full max-w-md animate-fade-in">
         
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 mb-6 shadow-[0_0_20px_rgba(249,115,22,0.1)]">
-             <span className="material-symbols-outlined text-orange-400">admin_panel_settings</span>
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-teal-600/10 border border-teal-600/20 mb-6 shadow-[0_0_20px_rgba(13,148,136,0.1)]">
+             <span className="material-symbols-outlined text-teal-500">admin_panel_settings</span>
           </div>
-          <h1 className="text-white font-bold text-3xl font-headline-md tracking-tight mb-2">Operator Login</h1>
-          <p className="text-stone-400 font-mono text-[11px] uppercase tracking-[0.2em]">
+          <h1 className="text-slate-900 font-bold text-3xl font-headline-md tracking-tight mb-2">Operator Login</h1>
+          <p className="text-slate-600 font-mono text-[11px] uppercase tracking-[0.2em]">
             Provide valid credentials to proceed
           </p>
         </div>
 
-        <div className="bento-glow rounded-3xl border border-white/[0.07] p-8"
-             style={{ background: 'linear-gradient(145deg,rgba(20,22,28,0.9),rgba(12,10,9,0.9))', backdropFilter: 'blur(20px)' }}>
+        <div className="bento-glow rounded-3xl border border-slate-200 p-8"
+             style={{ background: 'linear-gradient(145deg, rgba(255,255,255,1), rgba(248,250,252,1))', backdropFilter: 'blur(20px)' }}>
           
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-[10px] font-mono text-stone-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+              <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                 <span className="material-symbols-outlined text-[14px]">person</span> Operator ID
               </label>
               <input
@@ -68,13 +68,13 @@ export default function LoginPage() {
                 required
                 value={creds.username}
                 onChange={(e) => setCreds(p => ({ ...p, username: e.target.value }))}
-                className="w-full bg-black/40 border border-white/10 focus:border-orange-500/50 focus:shadow-[0_0_20px_rgba(249,115,22,0.15)] outline-none rounded-xl px-4 py-3.5 text-sm text-stone-200 placeholder-stone-700 transition-all font-mono"
+                className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-600/50 focus:shadow-[0_0_20px_rgba(13,148,136,0.15)] outline-none rounded-xl px-4 py-3.5 text-sm text-slate-800 placeholder-stone-700 transition-all font-mono"
                 placeholder="system_admin"
               />
             </div>
             
             <div>
-              <label className="block text-[10px] font-mono text-stone-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+              <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                 <span className="material-symbols-outlined text-[14px]">key</span> Passcode
               </label>
               <input
@@ -82,7 +82,7 @@ export default function LoginPage() {
                 required
                 value={creds.password}
                 onChange={(e) => setCreds(p => ({ ...p, password: e.target.value }))}
-                className="w-full bg-black/40 border border-white/10 focus:border-orange-500/50 focus:shadow-[0_0_20px_rgba(249,115,22,0.15)] outline-none rounded-xl px-4 py-3.5 text-sm text-stone-200 placeholder-stone-700 transition-all font-mono tracking-widest"
+                className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-600/50 focus:shadow-[0_0_20px_rgba(13,148,136,0.15)] outline-none rounded-xl px-4 py-3.5 text-sm text-slate-800 placeholder-stone-700 transition-all font-mono tracking-widest"
                 placeholder="••••••••"
               />
             </div>
@@ -97,7 +97,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full group flex items-center justify-center gap-2 px-7 py-4 mt-8 rounded-xl bg-orange-500 hover:bg-orange-400 disabled:opacity-50 disabled:hover:bg-orange-500 transition-all text-white font-semibold text-sm shadow-[0_0_30px_rgba(249,115,22,0.25)] hover:shadow-[0_0_50px_rgba(249,115,22,0.4)]"
+              className="w-full group flex items-center justify-center gap-2 px-7 py-4 mt-8 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 disabled:hover:bg-teal-600 transition-all text-slate-900 font-semibold text-sm shadow-[0_0_30px_rgba(13,148,136,0.25)] hover:shadow-[0_0_50px_rgba(13,148,136,0.4)]"
             >
               {loading ? (
                 <span className="font-mono text-xs tracking-widest uppercase">Authorizing...</span>
@@ -110,10 +110,10 @@ export default function LoginPage() {
             </button>
           </form>
           
-          <div className="mt-8 text-center border-t border-white/5 pt-6">
+          <div className="mt-8 text-center border-t border-slate-100 pt-6">
             <button 
               onClick={() => navigate('/signup')}
-              className="text-[10px] font-mono text-stone-500 hover:text-orange-400 transition-colors uppercase tracking-[0.2em] flex items-center justify-center gap-1 mx-auto"
+              className="text-[10px] font-mono text-slate-500 hover:text-teal-500 transition-colors uppercase tracking-[0.2em] flex items-center justify-center gap-1 mx-auto"
             >
               <span className="material-symbols-outlined text-[12px]">add</span>
               Initialize New Record

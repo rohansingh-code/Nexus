@@ -35,7 +35,7 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-200 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col items-center justify-center p-6 relative overflow-hidden">
       
       {/* Background Layers */}
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -55,20 +55,20 @@ export default function SignUpPage() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-teal-500/10 border border-teal-500/20 mb-6 shadow-[0_0_20px_rgba(20,184,166,0.1)]">
              <span className="material-symbols-outlined text-teal-400">person_add</span>
           </div>
-          <h1 className="text-white font-bold text-3xl font-headline-md tracking-tight mb-2">Initialize Patient Record</h1>
-          <p className="text-stone-400 font-mono text-[11px] uppercase tracking-[0.2em]">
+          <h1 className="text-slate-900 font-bold text-3xl font-headline-md tracking-tight mb-2">Initialize Patient Record</h1>
+          <p className="text-slate-600 font-mono text-[11px] uppercase tracking-[0.2em]">
             System Registration
           </p>
         </div>
 
-        <div className="bento-glow rounded-3xl border border-white/[0.07] p-8"
-             style={{ background: 'linear-gradient(145deg,rgba(20,22,28,0.9),rgba(12,10,9,0.9))', backdropFilter: 'blur(20px)' }}>
+        <div className="bento-glow rounded-3xl border border-slate-200 p-8"
+             style={{ background: 'linear-gradient(145deg, rgba(255,255,255,1), rgba(248,250,252,1))', backdropFilter: 'blur(20px)' }}>
           
           <form onSubmit={handleSignUp} className="space-y-6">
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-[10px] font-mono text-stone-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                   <span className="material-symbols-outlined text-[14px]">badge</span> Full Legal Name
                 </label>
                 <input
@@ -76,13 +76,13 @@ export default function SignUpPage() {
                   required
                   value={form.name}
                   onChange={(e) => setForm(p => ({ ...p, name: e.target.value }))}
-                  className="w-full bg-black/40 border border-white/10 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-stone-200 placeholder-stone-700 transition-all font-mono"
+                  className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-stone-700 transition-all font-mono"
                   placeholder="John Doe"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-mono text-stone-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                   <span className="material-symbols-outlined text-[14px]">mail</span> Operator ID (Email)
                 </label>
                 <input
@@ -90,7 +90,7 @@ export default function SignUpPage() {
                   required
                   value={form.username}
                   onChange={(e) => setForm(p => ({ ...p, username: e.target.value }))}
-                  className="w-full bg-black/40 border border-white/10 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-stone-200 placeholder-stone-700 transition-all font-mono"
+                  className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-stone-700 transition-all font-mono"
                   placeholder="john@nexus.local"
                 />
               </div>
@@ -98,7 +98,7 @@ export default function SignUpPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-[10px] font-mono text-stone-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                   <span className="material-symbols-outlined text-[14px]">key</span> Passcode
                 </label>
                 <input
@@ -107,13 +107,13 @@ export default function SignUpPage() {
                   minLength={8}
                   value={form.password}
                   onChange={(e) => setForm(p => ({ ...p, password: e.target.value }))}
-                  className="w-full bg-black/40 border border-white/10 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-stone-200 placeholder-stone-700 transition-all font-mono tracking-widest"
+                  className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-stone-700 transition-all font-mono tracking-widest"
                   placeholder="••••••••"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-mono text-stone-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                   <span className="material-symbols-outlined text-[14px]">cake</span> Birth Date
                 </label>
                 <input
@@ -121,21 +121,21 @@ export default function SignUpPage() {
                   required
                   value={form.birthDate}
                   onChange={(e) => setForm(p => ({ ...p, birthDate: e.target.value }))}
-                  className="w-full bg-black/40 border border-white/10 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-stone-200 transition-all font-mono [color-scheme:dark]"
+                  className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-slate-800 transition-all font-mono [color-scheme:dark]"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-[10px] font-mono text-stone-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                   <span className="material-symbols-outlined text-[14px]">wc</span> Gender
                 </label>
                 <select
                   required
                   value={form.gender}
                   onChange={(e) => setForm(p => ({ ...p, gender: e.target.value }))}
-                  className="w-full bg-black/40 border border-white/10 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3.5 text-sm text-stone-200 transition-all font-mono appearance-none"
+                  className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3.5 text-sm text-slate-800 transition-all font-mono appearance-none"
                 >
                   <option value="MALE">Male</option>
                   <option value="FEMALE">Female</option>
@@ -144,14 +144,14 @@ export default function SignUpPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-mono text-stone-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                   <span className="material-symbols-outlined text-[14px]">bloodtype</span> Blood Group
                 </label>
                 <select
                   required
                   value={form.bloodGroup}
                   onChange={(e) => setForm(p => ({ ...p, bloodGroup: e.target.value }))}
-                  className="w-full bg-black/40 border border-white/10 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3.5 text-sm text-stone-200 transition-all font-mono appearance-none"
+                  className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3.5 text-sm text-slate-800 transition-all font-mono appearance-none"
                 >
                   <option value="A_POSITIVE">A+</option>
                   <option value="A_NEGATIVE">A-</option>
@@ -182,7 +182,7 @@ export default function SignUpPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full group flex items-center justify-center gap-2 px-7 py-4 mt-8 rounded-xl bg-stone-800 border border-stone-700 hover:bg-teal-500/20 hover:border-teal-500/50 disabled:opacity-50 transition-all text-white font-semibold text-sm shadow-[0_0_30px_rgba(20,184,166,0.1)] hover:shadow-[0_0_40px_rgba(20,184,166,0.25)]"
+              className="w-full group flex items-center justify-center gap-2 px-7 py-4 mt-8 rounded-xl bg-white border border-slate-300 hover:bg-teal-500/20 hover:border-teal-500/50 disabled:opacity-50 transition-all text-slate-900 font-semibold text-sm shadow-[0_0_30px_rgba(20,184,166,0.1)] hover:shadow-[0_0_40px_rgba(20,184,166,0.25)]"
             >
               {loading ? (
                 <span className="font-mono text-xs tracking-widest uppercase">TRANSMITTING...</span>
@@ -195,10 +195,10 @@ export default function SignUpPage() {
             </button>
           </form>
           
-          <div className="mt-8 text-center border-t border-white/5 pt-6">
+          <div className="mt-8 text-center border-t border-slate-100 pt-6">
             <button 
               onClick={() => navigate('/login')}
-              className="text-[10px] font-mono text-stone-500 hover:text-teal-400 transition-colors uppercase tracking-[0.2em] flex items-center justify-center gap-1 mx-auto"
+              className="text-[10px] font-mono text-slate-500 hover:text-teal-400 transition-colors uppercase tracking-[0.2em] flex items-center justify-center gap-1 mx-auto"
             >
               <span className="material-symbols-outlined text-[12px]">login</span>
               Return to Authorization

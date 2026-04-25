@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -12,4 +14,6 @@ import lombok.Setter;
 public class LoginResponseDto {
     String jwt;
     Long userId;
+    Set<String> roles;
 }
+

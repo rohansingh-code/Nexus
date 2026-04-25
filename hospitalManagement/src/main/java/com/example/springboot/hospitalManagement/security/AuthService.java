@@ -34,8 +34,12 @@ public class AuthService {
         User user = (User) authentication.getPrincipal();
 
         String token = authUtil.generateAccessToken(user);
+        
+        Set<String> roles = user.getRoles().stream()
+                .map(Enum::name)
+                .collect(java.util.stream.Collectors.toSet());
 
-        return new LoginResponseDto(token, user.getId());
+        return new LoginResponseDto(token, user.getId(), roles);
     }
 
     public SignUpResponseDto signup(SignUpRequestDto signUpRequestDto) {

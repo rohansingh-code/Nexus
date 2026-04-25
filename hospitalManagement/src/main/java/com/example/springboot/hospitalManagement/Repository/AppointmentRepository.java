@@ -12,4 +12,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     
     // Used to fetch doctor appointments
     List<Appointment> findByDoctorId(Long doctorId);
+    List<Appointment> findByPatientId(Long patientId);
+    
+    // To check if a slot is occupied for a particular doctor
 }

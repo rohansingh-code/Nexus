@@ -7,4 +7,5 @@ import java.util.List;
 public interface AppointmentService {
     AppointmentResponseDto createNewAppointment(CreateAppointmentRequestDto dto,Long userId);
     List<AppointmentResponseDto> getAllAppointmentsOfDoctor(Long doctorId);
+    List<AppointmentResponseDto> getAllAppointmentsOfPatient(Long patientId);
 }

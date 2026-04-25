@@ -41,4 +41,10 @@ public class PatientController {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseEntity.ok(patientService.getPatientById(user.getId()));
     }
+
+    @GetMapping("/appointments")
+    public ResponseEntity<java.util.List<AppointmentResponseDto>> getPatientAppointments() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.ok(appointmentService.getAllAppointmentsOfPatient(user.getId()));
+    }
 }

@@ -97,4 +97,17 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .map(app -> modelMapper.map(app, AppointmentResponseDto.class))
                 .toList();
     }
+
+    @Override
+    public List<AppointmentResponseDto> getAllAppointmentsOfPatient(Long patientId) {
+        log.info("Fetching all appointments for patient ID: {}", patientId);
+        
+        if (!patientRepository.existsById(patientId)) {
+            throw new EntityNotFoundException("Patient not found");
+        }
+
+        return appointmentRepository.findByPatientId(patientId).stream()
+                .map(app -> modelMapper.map(app, AppointmentResponseDto.class))
+                .toList();
+    }
 }

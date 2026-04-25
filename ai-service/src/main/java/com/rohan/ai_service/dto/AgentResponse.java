@@ -1,5 +1,6 @@
 package com.rohan.ai_service.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,16 +14,18 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AgentResponse {
 
-    private String message;        // natural language text, always present
-    private List<DoctorOption> doctorList;  // only present when AI found doctors
-    private BookingReady bookingReady;      // only present on turn 3
+    private String message;
+    private List<DoctorOption> doctorList;
+    private BookingReady bookingReady;
 
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class DoctorOption {
         private Long id;
         private String name;
@@ -32,6 +35,7 @@ public class AgentResponse {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class BookingReady {
         private Long doctorId;
         private String date;

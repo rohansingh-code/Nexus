@@ -3,6 +3,13 @@ import { useChat } from '../hooks/useChat'
 import ChatBubble from '../components/ChatBubble'
 import TypingIndicator from '../components/TypingIndicator'
 
+const SUGGESTIONS = [
+  'I have chest pain when I breathe deeply',
+  'My knee has been swelling for 3 days',
+  'I need to see a cardiologist this week',
+  "I've had a high fever for two days'",
+]
+
 export default function ChatPage() {
   const [input, setInput] = useState('')
   const { messages, isTyping, bookingStatus, send, confirmBooking } = useChat()
@@ -14,111 +21,143 @@ export default function ChatPage() {
   }, [messages, isTyping])
 
   function handleKey(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() }
   }
 
-  function handleSend() {
-    if (!input.trim() || isTyping) return
-    send(input.trim())
+  function handleSend(text) {
+    const msg = (text ?? input).trim()
+    if (!msg || isTyping) return
+    send(msg)
     setInput('')
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'
-    }
+    if (textareaRef.current) textareaRef.current.style.height = 'auto'
   }
 
-  function handleDoctorSelect(doctor) {
-    send(`I'd like to book with ${doctor.name}`)
-  }
-
-  function handleCancelBooking() {
-    send('Cancel that, I want to choose a different option.')
-  }
+  const isEmpty = messages.length === 0
 
   return (
-    <div className="flex flex-col h-full w-full bg-slate-50 relative overflow-hidden">
-      
-      {/* Background glow */}
-      <div className="absolute top-[20%] left-[50%] translate-x-[-50%] w-[600px] h-[600px] bg-teal-600/5 blur-[120px] rounded-full pointer-events-none"></div>
+    <div className="flex flex-col h-full bg-transparent" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');`}</style>
 
-      {/* Chat History */}
-      <div className="flex-1 overflow-y-auto px-4 md:px-12 lg:px-24 py-8 flex flex-col gap-8 relative z-10">
-        
-        {/* Context Chip */}
-        <div className="flex justify-center w-full animate-fade-in">
-          <div className="px-4 py-1.5 rounded-full border border-teal-600/20 bg-teal-600/5 backdrop-blur-md shadow-[0_0_15px_rgba(13,148,136,0.1)]">
-            <span className="font-mono text-[10px] text-teal-500 tracking-[0.2em] uppercase flex items-center gap-2">
-              <span className="material-symbols-outlined text-[12px]">security</span>
-              Triage Session Initialized • HIPAA Protected
-            </span>
+      <div className="flex-1 flex overflow-hidden">
+        {/* ── Main Chat Area ── */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex-1 overflow-y-auto bg-white/30">
+            {isEmpty ? (
+              /* ── Blank / greeting state ── */
+              <div className="h-full flex flex-col items-center justify-center px-6 py-12 text-center animate-fade-in max-w-2xl mx-auto">
+                <div className="w-16 h-16 rounded-2xl bg-teal-600 flex items-center justify-center mb-6 shadow-lg shadow-teal-500/20">
+                  <span className="material-symbols-outlined text-white" style={{ fontSize: 28, fontVariationSettings: "'FILL' 1" }}>local_hospital</span>
+                </div>
+                <h2 className="text-3xl font-semibold text-slate-900 mb-3">Hi, I'm Nexus</h2>
+                <p className="text-slate-500 max-w-md leading-relaxed mb-10 text-lg" style={{ fontWeight: 300 }}>
+                  Tell me what you're experiencing and I'll find you the right doctor and book your appointment.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+                  {SUGGESTIONS.map((s, i) => (
+                    <button key={s} onClick={() => handleSend(s)}
+                      className="glass-card text-left px-5 py-4 rounded-2xl border border-white/60 text-sm text-slate-700 leading-snug animate-fade-in hover:border-teal-500/50 transition-all shadow-md hover:shadow-lg"
+                      style={{ animationDelay: `${0.1 + i * 0.05}s` }}>
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              /* ── Messages ── */
+              <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+                {/* Session chip */}
+                <div className="flex justify-center">
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200">
+                    <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 12 }}>lock</span>
+                    <span className="text-slate-500 text-xs">End-to-end encrypted session</span>
+                  </div>
+                </div>
+
+                {messages.map((msg, i) => (
+                  <ChatBubble
+                    key={i} msg={msg}
+                    onDoctorSelect={d => handleSend(`I'd like to book with ${d.name}`)}
+                    onConfirmBooking={confirmBooking}
+                    onCancelBooking={() => handleSend('Cancel that, I want to choose a different option.')}
+                    bookingStatus={bookingStatus}
+                  />
+                ))}
+                {isTyping && <TypingIndicator />}
+                <div ref={bottomRef} />
+              </div>
+            )}
           </div>
-        </div>
 
-        {messages.map((msg, i) => (
-          <ChatBubble
-            key={i}
-            msg={msg}
-            onDoctorSelect={handleDoctorSelect}
-            onConfirmBooking={confirmBooking}
-            onCancelBooking={handleCancelBooking}
-            bookingStatus={bookingStatus}
-          />
-        ))}
-
-        {isTyping && <TypingIndicator />}
-        
-        <div ref={bottomRef} className="h-4 w-full shrink-0" />
-      </div>
-
-      {/* Input Area (Fixed at bottom) */}
-      <div className="p-4 md:p-6 lg:px-24 border-t border-slate-200 bg-white backdrop-blur-2xl shrink-0 relative z-20">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-slate-50 border border-slate-200 focus-within:border-teal-600/50 focus-within:shadow-[0_0_20px_rgba(13,148,136,0.15)] focus-within:bg-white rounded-2xl p-2 flex items-end gap-3 transition-all duration-300">
-            <button className="p-2.5 text-slate-500 hover:text-slate-700 transition-colors rounded-xl hover:bg-slate-100 shrink-0 flex items-center justify-center cursor-pointer">
-              <span className="material-symbols-outlined text-[20px]">attach_file</span>
-            </button>
-            
-            <textarea
-              ref={textareaRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKey}
-              className="w-full bg-transparent border-none text-slate-800 font-body-lg text-sm md:text-base focus:ring-0 outline-none resize-none py-2.5 px-1 placeholder-slate-400 overflow-y-auto transition-all"
-              style={{ minHeight: '44px', maxHeight: '120px' }}
-              placeholder="Enter diagnostic query, symptoms, or command..."
-              rows={1}
-              onInput={e => {
-                e.target.style.height = 'auto'
-                e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px'
-              }}
-            />
-
-            <div className="flex items-center gap-2 shrink-0 pb-1.5 pr-1.5">
-              <button className="p-2.5 text-slate-500 hover:text-teal-400 transition-colors rounded-xl hover:bg-teal-500/10 flex items-center justify-center cursor-pointer">
-                <span className="material-symbols-outlined text-[20px]">mic</span>
-              </button>
-              <button 
-                onClick={handleSend}
-                disabled={isTyping || !input.trim()}
-                className="bg-teal-600 text-slate-900 p-2.5 rounded-xl hover:bg-teal-500 transition-all flex items-center justify-center shadow-[0_0_15px_rgba(13,148,136,0.3)] disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>send</span>
-              </button>
+          {/* ── Input bar ── */}
+          <div className="bg-white/80 backdrop-blur-md border-t border-slate-200 px-4 py-6 relative z-10">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-end gap-2 bg-white/80 border border-white focus-within:border-teal-400/50 focus-within:ring-4 focus-within:ring-teal-500/5 rounded-2xl px-3 py-2 transition-all shadow-sm">
+                <textarea ref={textareaRef} value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={handleKey}
+                  onInput={e => { e.target.style.height = 'auto'; e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px' }}
+                  placeholder="Describe your symptoms…"
+                  rows={1} style={{ minHeight: 40, maxHeight: 120, fontFamily: "'DM Sans', sans-serif" }}
+                  className="flex-1 bg-transparent border-none outline-none resize-none text-slate-800 placeholder-slate-400 text-sm py-1.5 px-1" />
+                <button onClick={() => handleSend()}
+                  disabled={isTyping || !input.trim()}
+                  className="w-9 h-9 flex items-center justify-center rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex-shrink-0 mb-0.5">
+                  <span className="material-symbols-outlined text-white" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1" }}>send</span>
+                </button>
+              </div>
+              <p className="text-center text-slate-400 text-xs mt-2">
+                Nexus is an AI assistant. Always verify critical medical information with a qualified professional.
+              </p>
             </div>
           </div>
-          
-          <div className="flex justify-between items-center mt-3 px-3">
-            <span className="font-mono text-[9px] text-slate-400 uppercase tracking-widest hidden md:inline flex items-center gap-1">
-              <span className="material-symbols-outlined text-[12px] text-teal-600/50">info</span>
-              NEXUS AI IS ASSISTIVE. VERIFY CRITICAL DATA.
-            </span>
-            <span className="font-mono text-[9px] text-slate-400 uppercase tracking-widest flex items-center gap-1">
-              <span className="material-symbols-outlined text-[12px] text-teal-500/50">lock</span> END-TO-END ENCRYPTED
-            </span>
-          </div>
         </div>
+
+        {/* ── Suggestions Sidebar (Visible only when not empty or on wide screens) ── */}
+        <aside className="w-80 bg-white/50 backdrop-blur-sm border-l border-slate-200 flex flex-col p-6 overflow-y-auto hidden lg:flex">
+          <div className="flex items-center gap-2 mb-6 text-slate-900">
+            <span className="material-symbols-outlined text-teal-600" style={{ fontSize: 20 }}>lightbulb</span>
+            <h3 className="font-semibold text-sm">Common Inquiries</h3>
+          </div>
+          
+          <div className="space-y-3">
+            {SUGGESTIONS.map(s => (
+              <button key={s} onClick={() => handleSend(s)}
+                className="w-full text-left p-3 rounded-xl bg-white border border-slate-100 hover:border-teal-300 hover:bg-teal-50 transition-all text-xs text-slate-600 leading-normal shadow-sm">
+                {s}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-10 pt-6 border-t border-slate-100">
+            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">How it works</h4>
+            <div className="space-y-4">
+              <div className="flex gap-3">
+                <div className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>verified_user</span>
+                </div>
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  Describe your symptoms in plain language.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <div className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>search</span>
+                </div>
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  I'll analyze and suggest the best specialists.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <div className="w-6 h-6 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>calendar_add_on</span>
+                </div>
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  Book your appointment directly within the chat.
+                </p>
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   )

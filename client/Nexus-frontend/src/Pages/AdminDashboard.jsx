@@ -1,289 +1,266 @@
 import { useState, useEffect } from 'react'
 import { onboardDoctor, getAllPatients, getDoctors } from '../api/agent'
 
-export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('ONBOARD') // 'ONBOARD', 'PATIENTS', 'DOCTORS'
-  
-  // Onboard State
-  const [form, setForm] = useState({
-    userId: '', name: '', specialization: '', experienceYears: '',
-    qualifications: '', bio: '', shiftStart: '09:00:00', shiftEnd: '17:00:00', workDays: []
-  })
-  const [onboardLoading, setOnboardLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
+const DAYS = ['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY']
+const BLANK_FORM = {
+  userId: '', name: '', specialization: '', experienceYears: '',
+  qualifications: '', bio: '', shiftStart: '09:00:00', shiftEnd: '17:00:00', workDays: []
+}
 
-  // Data State
+const inputCls = "w-full border border-white/60 bg-white/50 rounded-lg px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all shadow-sm"
+const labelCls = "block text-sm font-medium text-slate-700 mb-1.5"
+
+export default function AdminDashboard() {
+  const [tab, setTab] = useState('onboard')
+  const [form, setForm] = useState(BLANK_FORM)
+  const [onboardLoading, setOnboardLoading] = useState(false)
+  const [msg, setMsg] = useState({ type: '', text: '' })
   const [patients, setPatients] = useState([])
   const [doctors, setDoctors] = useState([])
   const [dataLoading, setDataLoading] = useState(false)
-
-  const DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
-    if (activeTab === 'PATIENTS') {
-      fetchPatients()
-    } else if (activeTab === 'DOCTORS') {
-      fetchDoctors()
-    }
-  }, [activeTab])
-
-  async function fetchPatients() {
-    setDataLoading(true)
-    try {
-      const data = await getAllPatients(0, 50) // Fetch top 50 for now
-      setPatients(data)
-    } catch (err) {
-      setError('Failed to fetch patients.')
-    } finally {
-      setDataLoading(false)
-    }
-  }
-
-  async function fetchDoctors() {
-    setDataLoading(true)
-    try {
-      const data = await getDoctors()
-      setDoctors(data)
-    } catch (err) {
-      setError('Failed to fetch doctors.')
-    } finally {
-      setDataLoading(false)
-    }
-  }
+    setSearch('')
+    if (tab === 'patients') { setDataLoading(true); getAllPatients(0, 50).then(setPatients).catch(() => setMsg({ type: 'error', text: 'Could not load patients.' })).finally(() => setDataLoading(false)) }
+    if (tab === 'doctors')  { setDataLoading(true); getDoctors().then(setDoctors).catch(() => setMsg({ type: 'error', text: 'Could not load doctors.' })).finally(() => setDataLoading(false)) }
+  }, [tab])
 
   function toggleDay(day) {
-    setForm(prev => {
-      const days = new Set(prev.workDays)
-      if (days.has(day)) days.delete(day)
-      else days.add(day)
-      return { ...prev, workDays: Array.from(days) }
+    setForm(p => {
+      const s = new Set(p.workDays)
+      s.has(day) ? s.delete(day) : s.add(day)
+      return { ...p, workDays: [...s] }
     })
   }
 
-  async function handleOnboardSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    setOnboardLoading(true)
-    setError('')
-    setSuccess('')
-
-    if (form.workDays.length === 0) {
-      setError('Select at least one work day.')
-      setOnboardLoading(false)
-      return
-    }
-
+    if (form.workDays.length === 0) { setMsg({ type: 'error', text: 'Please select at least one work day.' }); return }
+    setOnboardLoading(true); setMsg({ type: '', text: '' })
     try {
       await onboardDoctor({
         ...form,
         userId: Number(form.userId),
         experienceYears: Number(form.experienceYears),
         shiftStart: form.shiftStart.length === 5 ? form.shiftStart + ':00' : form.shiftStart,
-        shiftEnd: form.shiftEnd.length === 5 ? form.shiftEnd + ':00' : form.shiftEnd,
+        shiftEnd:   form.shiftEnd.length === 5   ? form.shiftEnd   + ':00' : form.shiftEnd,
       })
-      setSuccess(`Doctor ${form.name} successfully onboarded.`)
-      setForm({
-        userId: '', name: '', specialization: '', experienceYears: '',
-        qualifications: '', bio: '', shiftStart: '09:00:00', shiftEnd: '17:00:00', workDays: []
-      })
+      setMsg({ type: 'success', text: `Dr. ${form.name} has been added successfully.` })
+      setForm(BLANK_FORM)
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to onboard doctor.')
+      setMsg({ type: 'error', text: err.response?.data?.message || 'Failed to add doctor. Please try again.' })
     } finally {
       setOnboardLoading(false)
     }
   }
 
+  const filteredPatients = patients.filter(p =>
+    p.name?.toLowerCase().includes(search.toLowerCase()) || p.email?.toLowerCase().includes(search.toLowerCase())
+  )
+  const filteredDoctors = doctors.filter(d =>
+    d.name?.toLowerCase().includes(search.toLowerCase()) || d.specialization?.toLowerCase().includes(search.toLowerCase())
+  )
+
+  const TABS = [
+    { id: 'onboard', label: 'Add doctor', icon: 'person_add' },
+    { id: 'patients', label: 'Patients', icon: 'group' },
+    { id: 'doctors', label: 'Doctors', icon: 'stethoscope' },
+  ]
+
   return (
-    <div className="h-full overflow-y-auto p-4 md:p-8 relative">
-      <div className="max-w-6xl mx-auto space-y-6 relative z-10 animate-fade-in">
-        
-        {/* Header */}
-        <div className="bento-glow rounded-3xl border border-red-500/20 p-8 flex justify-between items-center"
-             style={{ background: 'linear-gradient(145deg, rgba(255,255,255,1), rgba(248,250,252,1))', backdropFilter: 'blur(20px)' }}>
-          <div className="flex items-center gap-6">
-            <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.1)]">
-              <span className="material-symbols-outlined text-red-500 text-3xl">admin_panel_settings</span>
-            </div>
-            <div>
-              <h1 className="text-2xl font-headline-md text-slate-800 mb-1">Admin Control Center</h1>
-              <p className="font-mono text-xs text-slate-500 uppercase tracking-widest">
-                High Privilege Operations & Live Data
-              </p>
-            </div>
+    <div className="h-full overflow-y-auto" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');`}</style>
+      <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+
+        {/* Page header */}
+        <div className="flex items-center justify-between animate-fade-in">
+          <div>
+            <h1 className="text-xl font-semibold text-slate-900">Admin Panel</h1>
+            <p className="text-slate-500 text-sm mt-0.5">Manage doctors, patients, and hospital records.</p>
           </div>
-          <div className="px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 font-mono text-[10px] tracking-widest flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></div>
-            LEVEL 5 CLEARANCE
-          </div>
+          <span className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 border border-red-200 rounded-full text-red-700 text-xs font-medium">
+            <span className="material-symbols-outlined" style={{ fontSize: 12 }}>shield</span>
+            Admin access
+          </span>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex gap-4 border-b border-slate-100 pb-4">
-          {['ONBOARD', 'PATIENTS', 'DOCTORS'].map(tab => (
-            <button
-              key={tab}
-              onClick={() => { setActiveTab(tab); setError(''); setSuccess(''); }}
-              className={`px-6 py-3 font-mono text-[11px] tracking-[0.2em] uppercase transition-all rounded-xl ${
-                activeTab === tab 
-                  ? 'bg-teal-600 text-white shadow-[0_0_20px_rgba(13,148,136,0.3)]' 
-                  : 'bg-white shadow-sm text-slate-500 border border-slate-100 hover:text-slate-700 hover:bg-slate-50'
-              }`}
-            >
-              {tab}
+        {/* Tabs */}
+        <div className="flex gap-1 glass-panel p-1 rounded-xl w-fit animate-fade-in">
+          {TABS.map(t => (
+            <button key={t.id} onClick={() => { setTab(t.id); setMsg({ type: '', text: '' }) }}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                tab === t.id ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+              }`}>
+              <span className="material-symbols-outlined" style={{ fontSize: 15 }}>{t.icon}</span>
+              {t.label}
             </button>
           ))}
         </div>
 
-        {error && (
-          <div className="p-4 bento-glow bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3">
-            <span className="material-symbols-outlined text-red-400 text-[18px]">error</span>
-            <span className="text-red-400 text-xs font-mono">{error}</span>
+        {/* Toast messages */}
+        {msg.text && (
+          <div className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border text-sm ${
+            msg.type === 'error'
+              ? 'bg-red-50 border-red-200 text-red-700'
+              : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+          }`}>
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+              {msg.type === 'error' ? 'error' : 'check_circle'}
+            </span>
+            {msg.text}
           </div>
         )}
-        {success && (
-          <div className="p-4 bento-glow bg-teal-500/10 border border-teal-500/30 rounded-xl flex items-center gap-3">
-            <span className="material-symbols-outlined text-teal-400 text-[18px]">check_circle</span>
-            <span className="text-teal-400 text-xs font-mono">{success}</span>
-          </div>
-        )}
 
-        {/* ONBOARD TAB */}
-        {activeTab === 'ONBOARD' && (
-          <div className="bento-glow rounded-3xl border border-slate-200 p-8 animate-fade-in relative overflow-hidden"
-               style={{ background: 'linear-gradient(145deg, rgba(255,255,255,1), rgba(248,250,252,1))', backdropFilter: 'blur(20px)' }}>
-            <div className="absolute top-[-20%] right-[-10%] w-40 h-40 bg-teal-600/10 blur-[60px] rounded-full pointer-events-none"></div>
-            <div className="flex items-center gap-3 mb-8 border-b border-slate-100 pb-4 relative z-10">
-              <span className="material-symbols-outlined text-teal-600">person_add</span>
-              <h2 className="font-mono text-sm text-slate-800 tracking-widest uppercase">Initialize Doctor Entity</h2>
-            </div>
-            
-            <form onSubmit={handleOnboardSubmit} className="space-y-6 relative z-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2"><span className="material-symbols-outlined text-[14px]">pin</span> System User ID</label>
-                  <input type="number" required min={1} value={form.userId} onChange={(e) => setForm(p => ({ ...p, userId: e.target.value }))} className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-600/50 focus:shadow-[0_0_15px_rgba(13,148,136,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-slate-800 font-mono transition-all" placeholder="e.g. 1" />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2"><span className="material-symbols-outlined text-[14px]">badge</span> Formal Name</label>
-                  <input type="text" required value={form.name} onChange={(e) => setForm(p => ({ ...p, name: e.target.value }))} className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-600/50 focus:shadow-[0_0_15px_rgba(13,148,136,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-slate-800 font-mono transition-all" placeholder="Dr. Gregory House" />
-                </div>
+        {/* ── ONBOARD TAB ── */}
+        {tab === 'onboard' && (
+          <div className="glass-panel rounded-2xl p-8 animate-fade-in">
+            <h2 className="font-semibold text-slate-900 mb-6">Add a new doctor</h2>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label className={labelCls}>User ID <span className="text-slate-400 font-normal text-xs">(from user account)</span></label>
+                  <input type="number" required min={1} placeholder="e.g. 12"
+                    value={form.userId} onChange={e => setForm(p => ({ ...p, userId: e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Full name</label>
+                  <input type="text" required placeholder="Dr. Jane Smith"
+                    value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className={inputCls} /></div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2"><span className="material-symbols-outlined text-[14px]">medical_services</span> Specialization</label>
-                  <input type="text" required value={form.specialization} onChange={(e) => setForm(p => ({ ...p, specialization: e.target.value }))} className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-600/50 focus:shadow-[0_0_15px_rgba(13,148,136,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-slate-800 font-mono transition-all" placeholder="Diagnostic Medicine" />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2"><span className="material-symbols-outlined text-[14px]">workspace_premium</span> Qualifications</label>
-                  <input type="text" required value={form.qualifications} onChange={(e) => setForm(p => ({ ...p, qualifications: e.target.value }))} className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-600/50 focus:shadow-[0_0_15px_rgba(13,148,136,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-slate-800 font-mono transition-all" placeholder="M.D., Board Certified" />
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label className={labelCls}>Specialization</label>
+                  <input type="text" required placeholder="Cardiology"
+                    value={form.specialization} onChange={e => setForm(p => ({ ...p, specialization: e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Qualifications</label>
+                  <input type="text" required placeholder="MBBS, MD, FRCP"
+                    value={form.qualifications} onChange={e => setForm(p => ({ ...p, qualifications: e.target.value }))} className={inputCls} /></div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2"><span className="material-symbols-outlined text-[14px]">timeline</span> Experience (Years)</label>
-                  <input type="number" required min={0} max={60} value={form.experienceYears} onChange={(e) => setForm(p => ({ ...p, experienceYears: e.target.value }))} className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-600/50 focus:shadow-[0_0_15px_rgba(13,148,136,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-slate-800 font-mono transition-all" />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2"><span className="material-symbols-outlined text-[14px]">schedule</span> Shift Start</label>
-                  <input type="time" required step="1" value={form.shiftStart} onChange={(e) => setForm(p => ({ ...p, shiftStart: e.target.value }))} className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-600/50 focus:shadow-[0_0_15px_rgba(13,148,136,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-slate-800 font-mono transition-all [color-scheme:dark]" />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2"><span className="material-symbols-outlined text-[14px]">update</span> Shift End</label>
-                  <input type="time" required step="1" value={form.shiftEnd} onChange={(e) => setForm(p => ({ ...p, shiftEnd: e.target.value }))} className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-600/50 focus:shadow-[0_0_15px_rgba(13,148,136,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-slate-800 font-mono transition-all [color-scheme:dark]" />
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div><label className={labelCls}>Years of experience</label>
+                  <input type="number" required min={0} max={60} placeholder="e.g. 8"
+                    value={form.experienceYears} onChange={e => setForm(p => ({ ...p, experienceYears: e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Shift start</label>
+                  <input type="time" required step="1"
+                    value={form.shiftStart} onChange={e => setForm(p => ({ ...p, shiftStart: e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Shift end</label>
+                  <input type="time" required step="1"
+                    value={form.shiftEnd} onChange={e => setForm(p => ({ ...p, shiftEnd: e.target.value }))} className={inputCls} /></div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2"><span className="material-symbols-outlined text-[14px]">calendar_month</span> Operational Days</label>
-                <div className="flex flex-wrap gap-3">
+                <label className={labelCls}>Work days</label>
+                <div className="flex flex-wrap gap-2">
                   {DAYS.map(day => (
-                    <button type="button" key={day} onClick={() => toggleDay(day)} className={`px-4 py-2.5 rounded-xl border font-mono text-[10px] tracking-widest transition-all ${form.workDays.includes(day) ? 'bg-teal-600/20 border-teal-600/50 text-teal-500 shadow-[0_0_10px_rgba(13,148,136,0.2)]' : 'bg-white shadow-sm border-slate-200 text-slate-500 hover:border-slate-300'}`}>{day.substring(0, 3)}</button>
+                    <button type="button" key={day} onClick={() => toggleDay(day)}
+                      className={`px-3.5 py-1.5 rounded-lg border text-sm font-medium transition-all ${
+                        form.workDays.includes(day)
+                          ? 'bg-teal-600 border-teal-600 text-white'
+                          : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
+                      }`}>
+                      {day.charAt(0) + day.slice(1, 3).toLowerCase()}
+                    </button>
                   ))}
                 </div>
               </div>
 
-              <div className="pt-6 border-t border-slate-100 flex justify-end">
-                <button type="submit" disabled={onboardLoading} className="bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-slate-900 font-semibold text-[11px] tracking-[0.2em] uppercase px-8 py-4 rounded-xl transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(13,148,136,0.2)] hover:shadow-[0_0_30px_rgba(13,148,136,0.4)]">
-                  <span className="material-symbols-outlined text-[18px]">publish</span>
-                  {onboardLoading ? 'TRANSMITTING...' : 'COMMIT DOCTOR'}
+              <div>
+                <label className={labelCls}>Bio <span className="text-slate-400 font-normal text-xs">(optional)</span></label>
+                <textarea rows={3} placeholder="Brief professional summary…"
+                  value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))}
+                  className={inputCls + ' resize-none'} />
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <button type="submit" disabled={onboardLoading}
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-60 transition-colors text-white font-semibold text-sm">
+                  {onboardLoading
+                    ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Adding doctor…</>
+                    : <><span className="material-symbols-outlined" style={{ fontSize: 16 }}>person_add</span> Add doctor</>}
                 </button>
               </div>
             </form>
           </div>
         )}
 
-        {/* PATIENTS TAB */}
-        {activeTab === 'PATIENTS' && (
-          <div className="bento-glow rounded-3xl border border-slate-200 p-8 animate-fade-in"
-               style={{ background: 'linear-gradient(145deg, rgba(255,255,255,1), rgba(248,250,252,1))', backdropFilter: 'blur(20px)' }}>
-             <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
-              <span className="material-symbols-outlined text-teal-400">group</span>
-              <h2 className="font-mono text-sm text-slate-800 tracking-widest uppercase">Registered Patients</h2>
-             </div>
-             {dataLoading ? (
-               <div className="flex items-center gap-3 py-4">
-                 <div className="w-4 h-4 border-t-2 border-teal-500 rounded-full animate-spin"></div>
-                 <p className="text-slate-500 font-mono text-xs">Fetching records...</p>
-               </div>
-             ) : (
-               <div className="grid gap-4">
-                 {patients.map(p => (
-                   <div key={p.id} className="border border-slate-100 bg-white shadow-sm p-5 rounded-xl flex justify-between items-center hover:border-teal-500/30 hover:bg-teal-500/5 transition-all group">
-                     <div>
-                       <p className="text-slate-800 font-medium text-sm flex items-center gap-2">
-                          <span className="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-teal-400 transition-colors">person</span>
-                          {p.name}
-                       </p>
-                       <p className="text-slate-500 font-mono text-[10px] mt-2 uppercase">{p.email}</p>
-                     </div>
-                     <div className="text-right">
-                       <span className="text-teal-400 font-mono text-[10px] border border-teal-500/20 bg-teal-500/10 px-2 py-1 rounded">ID: {p.id}</span>
-                       <p className="text-slate-500 font-mono text-[10px] mt-2">{p.gender} | {p.bloodGroup?.replace('_',' ')}</p>
-                     </div>
-                   </div>
-                 ))}
-               </div>
-             )}
+        {/* ── PATIENTS TAB ── */}
+        {tab === 'patients' && (
+          <div className="glass-panel rounded-2xl p-6 animate-fade-in">
+            <div className="flex items-center justify-between mb-4 gap-4">
+              <h2 className="font-semibold text-slate-900">Registered patients</h2>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style={{ fontSize: 16 }}>search</span>
+                <input type="text" placeholder="Search by name or email…" value={search} onChange={e => setSearch(e.target.value)}
+                  className="pl-9 pr-4 py-2 border border-white/60 bg-white/50 rounded-lg text-sm outline-none focus:bg-white focus:ring-2 focus:ring-teal-500 transition-all w-60" />
+              </div>
+            </div>
+            {dataLoading
+              ? <div className="py-8 flex justify-center"><div className="w-5 h-5 border-2 border-teal-600 border-t-transparent rounded-full animate-spin" /></div>
+              : filteredPatients.length === 0
+                ? <p className="text-slate-400 text-sm py-8 text-center">No patients found.</p>
+                : (
+                  <div className="divide-y divide-slate-100">
+                    {filteredPatients.map(p => (
+                      <div key={p.id} className="py-3.5 flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 text-xs font-semibold flex-shrink-0">
+                            {p.name?.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase() ?? 'P'}
+                          </div>
+                          <div>
+                            <p className="text-slate-900 font-medium text-sm">{p.name}</p>
+                            <p className="text-slate-400 text-xs">{p.email}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-xs font-medium px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full" style={{ fontFamily: "'DM Mono',monospace" }}>#{p.id}</span>
+                          <p className="text-slate-400 text-xs mt-1">{p.gender} · {p.bloodGroup?.replace('_', ' ')}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )
+            }
           </div>
         )}
 
-        {/* DOCTORS TAB */}
-        {activeTab === 'DOCTORS' && (
-          <div className="bento-glow rounded-3xl border border-slate-200 p-8 animate-fade-in"
-               style={{ background: 'linear-gradient(145deg, rgba(255,255,255,1), rgba(248,250,252,1))', backdropFilter: 'blur(20px)' }}>
-             <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
-              <span className="material-symbols-outlined text-teal-500">stethoscope</span>
-              <h2 className="font-mono text-sm text-slate-800 tracking-widest uppercase">Registered Doctors</h2>
-             </div>
-             {dataLoading ? (
-               <div className="flex items-center gap-3 py-4">
-                 <div className="w-4 h-4 border-t-2 border-teal-600 rounded-full animate-spin"></div>
-                 <p className="text-slate-500 font-mono text-xs">Fetching records...</p>
-               </div>
-             ) : (
-               <div className="grid lg:grid-cols-2 gap-4">
-                 {doctors.map(d => (
-                   <div key={d.id} className="border border-slate-100 bg-white shadow-sm p-5 rounded-xl hover:border-teal-600/30 hover:bg-teal-600/5 transition-all group">
-                     <div className="flex justify-between items-start mb-3">
-                       <p className="text-slate-800 font-medium text-sm flex items-center gap-2">
-                          <span className="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-teal-500 transition-colors">medical_services</span>
-                          {d.name}
-                       </p>
-                       <span className="text-teal-500 font-mono text-[10px] border border-teal-600/20 bg-teal-600/10 px-2 py-1 rounded">ID: {d.id}</span>
-                     </div>
-                     <p className="text-slate-600 font-mono text-[11px] mb-3">{d.specialization}</p>
-                     <p className="text-slate-500 font-mono text-[10px] uppercase">Shifts: {d.shiftStart || 'TBD'} - {d.shiftEnd || 'TBD'}</p>
-                     <div className="flex flex-wrap gap-2 mt-3">
-                       {(d.workDays || []).map(day => (
-                         <span key={day} className="text-[9px] border border-slate-200 bg-slate-50 px-2 py-1 rounded font-mono text-slate-600 uppercase tracking-widest">{day.substring(0,3)}</span>
-                       ))}
-                     </div>
-                   </div>
-                 ))}
-               </div>
-             )}
+        {/* ── DOCTORS TAB ── */}
+        {tab === 'doctors' && (
+          <div className="glass-panel rounded-2xl p-6 animate-fade-in">
+            <div className="flex items-center justify-between mb-4 gap-4">
+              <h2 className="font-semibold text-slate-900">Registered doctors</h2>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style={{ fontSize: 16 }}>search</span>
+                <input type="text" placeholder="Search by name or specialty…" value={search} onChange={e => setSearch(e.target.value)}
+                  className="pl-9 pr-4 py-2 border border-white/60 bg-white/50 rounded-lg text-sm outline-none focus:bg-white focus:ring-2 focus:ring-teal-500 transition-all w-64" />
+              </div>
+            </div>
+            {dataLoading
+              ? <div className="py-8 flex justify-center"><div className="w-5 h-5 border-2 border-teal-600 border-t-transparent rounded-full animate-spin" /></div>
+              : filteredDoctors.length === 0
+                ? <p className="text-slate-400 text-sm py-8 text-center">No doctors found.</p>
+                : (
+                  <div className="grid md:grid-cols-2 gap-3">
+                    {filteredDoctors.map(d => (
+                      <div key={d.id} className="glass-card p-4 rounded-xl group hover:-translate-y-0.5">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <p className="font-medium text-slate-900 text-sm">{d.name}</p>
+                            <p className="text-teal-600 text-xs mt-0.5">{d.specialization}</p>
+                          </div>
+                          <span className="text-xs font-medium px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full flex-shrink-0 ml-2" style={{ fontFamily: "'DM Mono',monospace" }}>#{d.id}</span>
+                        </div>
+                        <p className="text-slate-500 text-xs">{d.shiftStart || '—'} – {d.shiftEnd || '—'}</p>
+                        <div className="flex flex-wrap gap-1 mt-2.5">
+                          {(d.workDays || []).map(day => (
+                            <span key={day} className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">
+                              {day.charAt(0) + day.slice(1, 3).toLowerCase()}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )
+            }
           </div>
         )}
 

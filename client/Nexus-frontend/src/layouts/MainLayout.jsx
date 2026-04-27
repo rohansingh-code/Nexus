@@ -1,150 +1,164 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
 
-const noiseSvg = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`
+const ROUTE_LABELS = {
+  '/dashboard': 'My Profile',
+  '/chat': 'Book Appointment',
+  '/doctor-dashboard': 'My Schedule',
+  '/admin': 'Admin Panel',
+}
 
 export default function MainLayout() {
-  const logout = useAppStore(state => state.logout)
-  const roles = useAppStore(state => state.roles)
+  const logout = useAppStore(s => s.logout)
+  const roles = useAppStore(s => s.roles)
+  const user = useAppStore(s => s.user)
   const navigate = useNavigate()
+  const location = useLocation()
 
-  const handleLogout = () => {
-    logout()
-    navigate('/')
-  }
+  const handleLogout = () => { logout(); navigate('/') }
 
-  // Filter navigation items based on user roles
   const getNavItems = () => {
     const items = []
     if (roles.includes('PATIENT')) {
-      items.push({ to: '/dashboard', icon: 'group', label: 'My Profile' })
-      items.push({ to: '/chat', icon: 'psychology', label: 'Intelligence', isActiveClass: 'text-teal-600 bg-teal-600/10 border-r-[3px] border-teal-600' })
+      items.push({ to: '/dashboard', icon: 'person', label: 'My Profile' })
+      items.push({ to: '/chat', icon: 'chat_bubble', label: 'Book Appointment' })
     }
-    
     if (roles.includes('DOCTOR')) {
-      items.push({ to: '/doctor-dashboard', icon: 'stethoscope', label: 'My Schedule' })
+      items.push({ to: '/doctor-dashboard', icon: 'calendar_month', label: 'My Schedule' })
     }
-
     if (roles.includes('ADMIN')) {
-      items.push({ to: '/admin', icon: 'admin_panel_settings', label: 'Admin Panel' })
+      items.push({ to: '/admin', icon: 'shield_person', label: 'Admin Panel' })
     }
-
     return items
   }
 
   const navItems = getNavItems()
+  const pageTitle = ROUTE_LABELS[location.pathname] ?? 'Nexus'
+  const initials = user?.name
+    ? user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+    : roles[0]?.[0] ?? 'N'
 
   return (
-    <div className="bg-slate-50 text-slate-800 font-body-sm overflow-hidden h-screen w-screen flex relative">
-      
-      {/* Base Background Overlay */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.02]"
-           style={{ backgroundImage: noiseSvg, backgroundRepeat: 'repeat', backgroundSize: '200px 200px' }} />
+    <div style={{ fontFamily: "'DM Sans', sans-serif" }}
+      className="h-screen w-screen flex flex-col md:flex-row overflow-hidden mesh-bg-subtle">
 
-      {/* SideNavBar */}
-      <nav className="relative z-50 w-64 h-full border-r border-slate-200 bg-white backdrop-blur-2xl flex flex-col py-8 shadow-[10px_0_30px_rgba(0,0,0,0.5)]">
-        {/* Header */}
-        <div className="px-6 mb-10 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl overflow-hidden border border-teal-600/30 bg-teal-600/10 flex items-center justify-center shadow-[0_0_15px_rgba(13,148,136,0.15)]">
-             <span className="material-symbols-outlined text-teal-600">medical_services</span>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+        .nav-tip { position:absolute; left:64px; top:50%; transform:translateY(-50%); background:#1e293b; color:#f8fafc;
+          font-size:11px; white-space:nowrap; padding:4px 10px; border-radius:6px; opacity:0; pointer-events:none;
+          transition:opacity 0.15s ease; z-index:100; }
+        .nav-item:hover .nav-tip { opacity:1; }
+        .nav-item { position:relative; }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .fade-up { animation: fadeUp 0.3s ease forwards; }
+      `}</style>
+
+      {/* ── Desktop Sidebar (240px) ── */}
+      <nav className="hidden md:flex w-60 h-full bg-white border-r border-slate-200 flex-col py-6 z-50 flex-shrink-0 shadow-sm">
+        {/* Brand */}
+        <div className="px-6 mb-8 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-teal-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-teal-500/20">
+            <span className="material-symbols-outlined text-white" style={{ fontSize: 20, fontVariationSettings: "'FILL' 1" }}>local_hospital</span>
           </div>
           <div>
-            <h1 className="text-slate-900 font-bold text-xl tracking-[0.2em] font-headline-md leading-none mb-1">NEXUS</h1>
-            <p className="font-mono text-[10px] uppercase tracking-widest text-teal-600/70">Terminal v4.2</p>
+            <p className="font-bold text-slate-900 tracking-tight text-lg leading-none">NEXUS</p>
+            <p className="text-[10px] text-teal-600 font-bold uppercase tracking-widest mt-0.5">Medical AI</p>
           </div>
         </div>
 
-        {/* Navigation Links */}
-        <div className="flex-1 flex flex-col space-y-1">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) => 
-                `flex items-center gap-3 px-6 py-4 transition-all font-mono text-[11px] uppercase tracking-[0.15em] group relative ${
-                  isActive 
-                    ? item.isActiveClass || 'text-teal-600 bg-teal-600/10 border-r-[3px] border-teal-600' 
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800 border-r-[3px] border-transparent'
+        {/* Nav links */}
+        <div className="flex flex-col gap-1.5 flex-1 w-full px-3">
+          {navItems.map(item => (
+            <NavLink key={item.to} to={item.to}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all ${
+                  isActive
+                    ? 'bg-teal-50 text-teal-700 shadow-sm ring-1 ring-teal-100'
+                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                 }`
               }
             >
               {({ isActive }) => (
                 <>
-                  <span 
-                    className={`material-symbols-outlined ${!isActive && 'group-hover:text-slate-700 transition-colors'}`}
-                    style={isActive ? { fontVariationSettings: "'FILL' 1" } : {}}
-                  >
+                  <span className="material-symbols-outlined shrink-0" style={{ fontSize: 20, fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>
                     {item.icon}
                   </span>
-                  <span>{item.label}</span>
+                  <span className="text-sm font-medium">{item.label}</span>
                 </>
               )}
             </NavLink>
           ))}
         </div>
 
-        {/* CTA (Only for Patients) */}
-        {roles.includes('PATIENT') && (
-          <div className="px-6 mb-8">
-            <button 
-              onClick={() => navigate('/chat')}
-              className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-teal-600 hover:bg-teal-500 text-slate-900 font-semibold text-xs tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(13,148,136,0.2)] hover:shadow-[0_0_30px_rgba(13,148,136,0.4)]"
-            >
-              <span className="material-symbols-outlined text-[18px]">psychology</span>
-              START TRIAGE
-            </button>
-          </div>
-        )}
-
-        {/* Footer Links */}
-        <div className="flex flex-col border-t border-slate-200 pt-4">
-          <button className="flex items-center gap-3 px-6 py-4 text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all active:scale-[0.98] font-mono text-[11px] uppercase tracking-[0.15em] group">
-            <span className="material-symbols-outlined text-[18px]">settings</span>
-            <span>Settings</span>
-          </button>
-          <button onClick={handleLogout} className="flex items-center gap-3 px-6 py-4 text-slate-500 hover:bg-slate-50 hover:text-slate-800 hover:text-red-400 transition-all active:scale-[0.98] font-mono text-[11px] uppercase tracking-[0.15em] group cursor-pointer">
-            <span className="material-symbols-outlined text-[18px]">logout</span>
-            <span>Logout</span>
+        {/* Bottom actions */}
+        <div className="px-3 border-t border-slate-100 pt-6">
+          <button onClick={handleLogout}
+            className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-600 transition-all">
+            <span className="material-symbols-outlined shrink-0" style={{ fontSize: 20 }}>logout</span>
+            <span className="text-sm font-medium">Sign out</span>
           </button>
         </div>
       </nav>
 
-      {/* TopAppBar */}
-      <header className="fixed top-0 right-0 left-64 h-16 flex justify-between items-center px-8 z-40 bg-white shadow-sm backdrop-blur-md border-b border-slate-200">
-        <div className="flex items-center gap-4">
-           {/* Breadcrumb or title could go here */}
-           <span className="font-mono text-xs text-slate-500 tracking-widest uppercase terminal-cursor">_SYSTEM_ONLINE</span>
-        </div>
-        <div className="flex items-center gap-6">
-          {/* Status Badge */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-green-500/10 border border-green-500/20">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="font-mono text-green-400 text-[10px] uppercase tracking-widest">
-              {roles.join(', ')} / ACTIVE
-            </span>
-          </div>
-          {/* Action Icons */}
-          <div className="flex items-center gap-3 border-l border-slate-200 pl-6">
-            <button className="text-slate-500 hover:text-slate-800 p-2 rounded-lg hover:bg-slate-50 transition-all">
-              <span className="material-symbols-outlined text-[20px]">notifications</span>
-            </button>
-            <button className="text-slate-500 hover:text-slate-800 p-2 rounded-lg hover:bg-slate-50 transition-all">
-              <span className="material-symbols-outlined text-[20px]">account_circle</span>
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* ── Right column ── */}
+      <div className="flex-1 flex flex-col overflow-hidden">
 
-      {/* Main Content Area */}
-      <main className="flex-1 mt-16 h-[calc(100vh-4rem)] flex flex-col relative z-10 overflow-hidden bg-slate-50">
-         {/* Background Glows */}
-         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-teal-600/5 blur-[120px] rounded-full pointer-events-none"></div>
-         <div className="absolute bottom-[10%] right-[-10%] w-[40%] h-[40%] bg-teal-500/5 blur-[100px] rounded-full pointer-events-none"></div>
-         
-         <div className="flex-1 overflow-auto p-8 relative z-20">
-            <Outlet />
-         </div>
-      </main>
+        {/* Topbar */}
+        <header className="h-16 bg-white/95 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 flex-shrink-0 z-40">
+          <div className="flex items-center gap-3">
+            <h1 className="text-slate-900 font-semibold text-sm">{pageTitle}</h1>
+            {roles.includes('PATIENT') && location.pathname === '/dashboard' && (
+              <button onClick={() => navigate('/chat')}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-600 hover:bg-teal-500 transition-colors text-white text-xs font-medium">
+                <span className="material-symbols-outlined" style={{ fontSize: 12, fontVariationSettings: "'FILL' 1" }}>add</span>
+                Book appointment
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-3">
+            {/* Live status */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-emerald-700 text-xs font-medium" style={{ fontFamily: "'DM Mono', monospace" }}>
+                {roles[0]?.charAt(0) + roles[0]?.slice(1).toLowerCase()}
+              </span>
+            </div>
+            {/* Avatar */}
+            <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-white text-xs font-semibold cursor-pointer">
+              {initials}
+            </div>
+          </div>
+        </header>
+
+        {/* Page content */}
+        <main className="flex-1 overflow-hidden pb-16 md:pb-0">
+          <Outlet />
+        </main>
+
+        {/* ── Mobile Bottom Navigation ── */}
+        <nav className="md:hidden h-16 bg-white/95 backdrop-blur-md border-t border-slate-200 flex items-center justify-around px-4 z-50">
+          {navItems.map(item => (
+            <NavLink key={item.to} to={item.to}
+              className={({ isActive }) =>
+                `flex flex-col items-center gap-1 transition-all ${
+                  isActive ? 'text-teal-600' : 'text-slate-400'
+                }`
+              }
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 22, fontVariationSettings: location.pathname === item.to ? "'FILL' 1" : "'FILL' 0" }}>
+                {item.icon}
+              </span>
+              <span className="text-[10px] font-medium tracking-tight">{item.label.split(' ')[0]}</span>
+            </NavLink>
+          ))}
+          <button onClick={handleLogout}
+            className="flex flex-col items-center gap-1 text-slate-400">
+            <span className="material-symbols-outlined" style={{ fontSize: 22 }}>logout</span>
+            <span className="text-[10px] font-medium tracking-tight">Logout</span>
+          </button>
+        </nav>
+      </div>
     </div>
   )
 }

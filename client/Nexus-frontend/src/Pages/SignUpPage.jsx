@@ -2,16 +2,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { signup } from '../api/agent'
 
-const noiseSvg = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`
-
 export default function SignUpPage() {
   const [form, setForm] = useState({
-    username: '', // Using username for email as per backend
-    password: '',
-    name: '',
-    birthDate: '',
-    gender: 'MALE',
-    bloodGroup: 'O_POSITIVE'
+    username: '', password: '', name: '',
+    birthDate: '', gender: 'MALE', bloodGroup: 'O_POSITIVE'
   })
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -25,186 +19,119 @@ export default function SignUpPage() {
     setSuccess('')
     try {
       await signup(form)
-      setSuccess('Record initialized successfully. Proceed to authorization.')
+      setSuccess('Account created! Redirecting you to sign in…')
       setTimeout(() => navigate('/login'), 2000)
     } catch (err) {
-      setError(err.response?.data?.message || 'Initialization failed. Check your data format.')
+      setError(err.response?.data?.message || 'Something went wrong. Please check your details and try again.')
     } finally {
       setLoading(false)
     }
   }
 
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      
-      {/* Background Layers */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute bottom-[10%] right-[10%] w-[600px] h-[600px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(20,184,166,0.07) 0%, transparent 70%)' }} />
-        <div className="absolute inset-0 opacity-[0.025]"
-          style={{ backgroundImage: noiseSvg, backgroundRepeat: 'repeat', backgroundSize: '200px 200px' }} />
-        <div className="absolute inset-0"
-          style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px)',
-            backgroundSize: '100% 80px'
-          }} />
-      </div>
+  const f = (key, val) => setForm(p => ({ ...p, [key]: val }))
+  const inputCls = "w-full border border-white/60 bg-white/50 rounded-lg px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all shadow-sm"
+  const labelCls = "block text-sm font-medium text-slate-700 mb-1.5"
 
-      <div className="z-10 w-full max-w-2xl mt-12 mb-12 animate-fade-in">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-teal-500/10 border border-teal-500/20 mb-6 shadow-[0_0_20px_rgba(20,184,166,0.1)]">
-             <span className="material-symbols-outlined text-teal-400">person_add</span>
+  return (
+    <div className="min-h-screen mesh-bg-subtle flex flex-col items-center justify-center px-6 py-12" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap');`}</style>
+
+      <div className="w-full max-w-lg">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center mx-auto mb-4">
+            <span className="material-symbols-outlined text-white" style={{ fontSize: 18, fontVariationSettings: "'FILL' 1" }}>local_hospital</span>
           </div>
-          <h1 className="text-slate-900 font-bold text-3xl font-headline-md tracking-tight mb-2">Initialize Patient Record</h1>
-          <p className="text-slate-600 font-mono text-[11px] uppercase tracking-[0.2em]">
-            System Registration
-          </p>
+          <h1 className="text-2xl font-semibold text-slate-900 mb-1">Create your account</h1>
+          <p className="text-slate-500 text-sm">Free. No credit card required.</p>
         </div>
 
-        <div className="bento-glow rounded-3xl border border-slate-200 p-8"
-             style={{ background: 'linear-gradient(145deg, rgba(255,255,255,1), rgba(248,250,252,1))', backdropFilter: 'blur(20px)' }}>
-          
-          <form onSubmit={handleSignUp} className="space-y-6">
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[14px]">badge</span> Full Legal Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={form.name}
-                  onChange={(e) => setForm(p => ({ ...p, name: e.target.value }))}
-                  className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-stone-700 transition-all font-mono"
-                  placeholder="John Doe"
-                />
-              </div>
+        <div className="glass-panel rounded-2xl p-8 animate-fade-in">
+          <form onSubmit={handleSignUp} className="space-y-5">
 
+            {/* Name + Email */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[14px]">mail</span> Operator ID (Email)
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={form.username}
-                  onChange={(e) => setForm(p => ({ ...p, username: e.target.value }))}
-                  className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-stone-700 transition-all font-mono"
-                  placeholder="john@nexus.local"
-                />
+                <label className={labelCls}>Full name</label>
+                <input type="text" required placeholder="Jane Doe"
+                  value={form.name} onChange={e => f('name', e.target.value)} className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Email address</label>
+                <input type="email" required placeholder="you@example.com" autoComplete="email"
+                  value={form.username} onChange={e => f('username', e.target.value)} className={inputCls} />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[14px]">key</span> Passcode
-                </label>
-                <input
-                  type="password"
-                  required
-                  minLength={8}
-                  value={form.password}
-                  onChange={(e) => setForm(p => ({ ...p, password: e.target.value }))}
-                  className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-stone-700 transition-all font-mono tracking-widest"
-                  placeholder="••••••••"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[14px]">cake</span> Birth Date
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={form.birthDate}
-                  onChange={(e) => setForm(p => ({ ...p, birthDate: e.target.value }))}
-                  className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3 text-sm text-slate-800 transition-all font-mono [color-scheme:dark]"
-                />
-              </div>
+            {/* Password */}
+            <div>
+              <label className={labelCls}>Password</label>
+              <input type="password" required minLength={8} placeholder="Minimum 8 characters"
+                value={form.password} onChange={e => f('password', e.target.value)} className={inputCls} />
+              {form.password.length > 0 && form.password.length < 8 && (
+                <p className="text-amber-600 text-xs mt-1.5 flex items-center gap-1">
+                  <span className="material-symbols-outlined" style={{ fontSize: 12 }}>warning</span>
+                  At least 8 characters needed
+                </p>
+              )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* DOB + Gender */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[14px]">wc</span> Gender
-                </label>
-                <select
-                  required
-                  value={form.gender}
-                  onChange={(e) => setForm(p => ({ ...p, gender: e.target.value }))}
-                  className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3.5 text-sm text-slate-800 transition-all font-mono appearance-none"
-                >
+                <label className={labelCls}>Date of birth</label>
+                <input type="date" required
+                  value={form.birthDate} onChange={e => f('birthDate', e.target.value)} className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Gender</label>
+                <select value={form.gender} onChange={e => f('gender', e.target.value)} className={inputCls}>
                   <option value="MALE">Male</option>
                   <option value="FEMALE">Female</option>
-                  <option value="OTHER">Other</option>
+                  <option value="OTHER">Prefer not to say</option>
                 </select>
               </div>
+            </div>
 
-              <div>
-                <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[14px]">bloodtype</span> Blood Group
-                </label>
-                <select
-                  required
-                  value={form.bloodGroup}
-                  onChange={(e) => setForm(p => ({ ...p, bloodGroup: e.target.value }))}
-                  className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-500/50 focus:shadow-[0_0_20px_rgba(20,184,166,0.15)] outline-none rounded-xl px-4 py-3.5 text-sm text-slate-800 transition-all font-mono appearance-none"
-                >
-                  <option value="A_POSITIVE">A+</option>
-                  <option value="A_NEGATIVE">A-</option>
-                  <option value="B_POSITIVE">B+</option>
-                  <option value="B_NEGATIVE">B-</option>
-                  <option value="AB_POSITIVE">AB+</option>
-                  <option value="AB_NEGATIVE">AB-</option>
-                  <option value="O_POSITIVE">O+</option>
-                  <option value="O_NEGATIVE">O-</option>
-                </select>
-              </div>
+            {/* Blood group */}
+            <div>
+              <label className={labelCls}>Blood group</label>
+              <select value={form.bloodGroup} onChange={e => f('bloodGroup', e.target.value)} className={inputCls}>
+                {['A_POSITIVE','A_NEGATIVE','B_POSITIVE','B_NEGATIVE','AB_POSITIVE','AB_NEGATIVE','O_POSITIVE','O_NEGATIVE'].map(v => (
+                  <option key={v} value={v}>{v.replace('_POSITIVE', '+').replace('_NEGATIVE', '-')}</option>
+                ))}
+              </select>
             </div>
 
             {error && (
-              <div className="px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3 animate-fade-in mt-4">
-                <span className="material-symbols-outlined text-red-400 text-[18px]">gpp_bad</span>
-                <span className="text-red-400 text-xs font-mono">{error}</span>
+              <div className="flex items-start gap-2 px-3.5 py-3 bg-red-50 border border-red-200 rounded-lg">
+                <span className="material-symbols-outlined text-red-500 flex-shrink-0 mt-0.5" style={{ fontSize: 16 }}>error</span>
+                <span className="text-red-700 text-sm">{error}</span>
               </div>
             )}
-
             {success && (
-              <div className="px-4 py-3 bg-teal-500/10 border border-teal-500/30 rounded-xl flex items-center gap-3 animate-fade-in mt-4">
-                <span className="material-symbols-outlined text-teal-400 text-[18px]">check_circle</span>
-                <span className="text-teal-400 text-xs font-mono">{success}</span>
+              <div className="flex items-center gap-2 px-3.5 py-3 bg-emerald-50 border border-emerald-200 rounded-lg">
+                <span className="material-symbols-outlined text-emerald-600" style={{ fontSize: 16 }}>check_circle</span>
+                <span className="text-emerald-700 text-sm">{success}</span>
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full group flex items-center justify-center gap-2 px-7 py-4 mt-8 rounded-xl bg-white border border-slate-300 hover:bg-teal-500/20 hover:border-teal-500/50 disabled:opacity-50 transition-all text-slate-900 font-semibold text-sm shadow-[0_0_30px_rgba(20,184,166,0.1)] hover:shadow-[0_0_40px_rgba(20,184,166,0.25)]"
-            >
-              {loading ? (
-                <span className="font-mono text-xs tracking-widest uppercase">TRANSMITTING...</span>
-              ) : (
-                <>
-                  <span className="material-symbols-outlined text-[18px] text-teal-400">publish</span>
-                  SUBMIT RECORD
-                </>
-              )}
+            <button type="submit" disabled={loading}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-teal-600 hover:bg-teal-500 disabled:opacity-60 transition-colors text-white font-semibold text-sm">
+              {loading
+                ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Creating account...</>
+                : 'Create account'}
             </button>
+
           </form>
-          
-          <div className="mt-8 text-center border-t border-slate-100 pt-6">
-            <button 
-              onClick={() => navigate('/login')}
-              className="text-[10px] font-mono text-slate-500 hover:text-teal-400 transition-colors uppercase tracking-[0.2em] flex items-center justify-center gap-1 mx-auto"
-            >
-              <span className="material-symbols-outlined text-[12px]">login</span>
-              Return to Authorization
-            </button>
-          </div>
         </div>
+
+        <p className="text-center text-sm text-slate-500 mt-5">
+          Already have an account?{' '}
+          <button onClick={() => navigate('/login')} className="text-teal-600 font-medium hover:text-teal-700">
+            Sign in
+          </button>
+        </p>
       </div>
     </div>
   )

@@ -3,14 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { login } from '../api/agent'
 import { useAppStore } from '../store/useAppStore'
 
-const noiseSvg = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`
-
 export default function LoginPage() {
   const [creds, setCreds] = useState({ username: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const setAuth = useAppStore(state => state.setAuth)
+  const setAuth = useAppStore(s => s.setAuth)
 
   async function handleLogin(e) {
     e.preventDefault()
@@ -21,106 +19,97 @@ export default function LoginPage() {
       setAuth(data.jwt, data.roles)
       navigate('/dashboard')
     } catch {
-      setError('Invalid credentials or unauthorized')
+      setError('Incorrect email or password. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      
-      {/* Background Layers */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(13,148,136,0.1) 0%, transparent 70%)' }} />
-        <div className="absolute inset-0 opacity-[0.025]"
-          style={{ backgroundImage: noiseSvg, backgroundRepeat: 'repeat', backgroundSize: '200px 200px' }} />
-        <div className="absolute inset-0"
-          style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px)',
-            backgroundSize: '100% 80px'
-          }} />
-      </div>
+    <div className="min-h-screen mesh-bg-subtle flex" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');`}</style>
 
-      <div className="z-10 w-full max-w-md animate-fade-in">
-        
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-teal-600/10 border border-teal-600/20 mb-6 shadow-[0_0_20px_rgba(13,148,136,0.1)]">
-             <span className="material-symbols-outlined text-teal-500">admin_panel_settings</span>
+      {/* Left panel */}
+      <div className="hidden md:flex w-1/2 bg-teal-600 flex-col justify-between p-12">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+            <span className="material-symbols-outlined text-white" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1" }}>local_hospital</span>
           </div>
-          <h1 className="text-slate-900 font-bold text-3xl font-headline-md tracking-tight mb-2">Operator Login</h1>
-          <p className="text-slate-600 font-mono text-[11px] uppercase tracking-[0.2em]">
-            Provide valid credentials to proceed
+          <span className="text-white font-semibold">Nexus</span>
+        </div>
+        <div>
+          <p className="text-teal-100 text-sm mb-3 uppercase tracking-widest" style={{ fontFamily: "'DM Mono',monospace" }}>AI Medical Booking</p>
+          <h2 className="text-white text-4xl font-semibold leading-snug mb-6">
+            The fastest way to see the right doctor.
+          </h2>
+          <p className="text-teal-200 leading-relaxed" style={{ fontWeight: 300 }}>
+            Describe your symptoms. Nexus finds available specialists and books your appointment — in one conversation.
           </p>
         </div>
+        <div className="flex items-center gap-3 text-teal-200 text-sm">
+          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>lock</span>
+          End-to-end encrypted · HIPAA compliant
+        </div>
+      </div>
 
-        <div className="bento-glow rounded-3xl border border-slate-200 p-8"
-             style={{ background: 'linear-gradient(145deg, rgba(255,255,255,1), rgba(248,250,252,1))', backdropFilter: 'blur(20px)' }}>
-          
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div>
-              <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                <span className="material-symbols-outlined text-[14px]">person</span> Operator ID
-              </label>
-              <input
-                type="text"
-                required
-                value={creds.username}
-                onChange={(e) => setCreds(p => ({ ...p, username: e.target.value }))}
-                className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-600/50 focus:shadow-[0_0_20px_rgba(13,148,136,0.15)] outline-none rounded-xl px-4 py-3.5 text-sm text-slate-800 placeholder-stone-700 transition-all font-mono"
-                placeholder="system_admin"
-              />
+      {/* Right panel — form */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 glass-panel">
+        <div className="w-full max-w-sm animate-fade-in">
+          {/* Mobile logo */}
+          <div className="flex items-center gap-2 mb-8 md:hidden">
+            <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center">
+              <span className="material-symbols-outlined text-white" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1" }}>local_hospital</span>
             </div>
-            
+            <span className="font-semibold text-slate-900">Nexus</span>
+          </div>
+
+          <h1 className="text-2xl font-semibold text-slate-900 mb-1">Welcome back</h1>
+          <p className="text-slate-500 text-sm mb-8">Sign in to your account to continue.</p>
+
+          <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                <span className="material-symbols-outlined text-[14px]">key</span> Passcode
-              </label>
-              <input
-                type="password"
-                required
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Email address</label>
+              <input type="email" required autoComplete="email"
+                value={creds.username}
+                onChange={e => setCreds(p => ({ ...p, username: e.target.value }))}
+                className="w-full border border-white/60 bg-white/50 rounded-lg px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all shadow-sm"
+                placeholder="you@example.com" />
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-sm font-medium text-slate-700">Password</label>
+                <button type="button" className="text-xs text-teal-600 hover:text-teal-700 font-medium">Forgot password?</button>
+              </div>
+              <input type="password" required autoComplete="current-password"
                 value={creds.password}
-                onChange={(e) => setCreds(p => ({ ...p, password: e.target.value }))}
-                className="w-full bg-white shadow-sm border border-slate-200 focus:border-teal-600/50 focus:shadow-[0_0_20px_rgba(13,148,136,0.15)] outline-none rounded-xl px-4 py-3.5 text-sm text-slate-800 placeholder-stone-700 transition-all font-mono tracking-widest"
-                placeholder="••••••••"
-              />
+                onChange={e => setCreds(p => ({ ...p, password: e.target.value }))}
+                className="w-full border border-white/60 bg-white/50 rounded-lg px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all shadow-sm"
+                placeholder="••••••••" />
             </div>
 
             {error && (
-              <div className="px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3 animate-fade-in">
-                <span className="material-symbols-outlined text-red-400 text-[18px]">gpp_bad</span>
-                <span className="text-red-400 text-xs font-mono">{error}</span>
+              <div className="flex items-center gap-2 px-3.5 py-3 bg-red-50 border border-red-200 rounded-lg">
+                <span className="material-symbols-outlined text-red-500" style={{ fontSize: 16 }}>error</span>
+                <span className="text-red-700 text-sm">{error}</span>
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full group flex items-center justify-center gap-2 px-7 py-4 mt-8 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 disabled:hover:bg-teal-600 transition-all text-slate-900 font-semibold text-sm shadow-[0_0_30px_rgba(13,148,136,0.25)] hover:shadow-[0_0_50px_rgba(13,148,136,0.4)]"
-            >
-              {loading ? (
-                <span className="font-mono text-xs tracking-widest uppercase">Authorizing...</span>
-              ) : (
-                <>
-                  AUTHORIZE SESSION
-                  <span className="material-symbols-outlined btn-arrow" style={{ fontSize: 18 }}>arrow_forward</span>
-                </>
-              )}
+            <button type="submit" disabled={loading}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-teal-600 hover:bg-teal-500 disabled:opacity-60 transition-colors text-white font-semibold text-sm mt-2">
+              {loading
+                ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Signing in...</>
+                : 'Sign in'}
             </button>
           </form>
-          
-          <div className="mt-8 text-center border-t border-slate-100 pt-6">
-            <button 
-              onClick={() => navigate('/signup')}
-              className="text-[10px] font-mono text-slate-500 hover:text-teal-500 transition-colors uppercase tracking-[0.2em] flex items-center justify-center gap-1 mx-auto"
-            >
-              <span className="material-symbols-outlined text-[12px]">add</span>
-              Initialize New Record
-            </button>
-          </div>
-        </div>
 
+          <p className="text-center text-sm text-slate-500 mt-6">
+            Don't have an account?{' '}
+            <button onClick={() => navigate('/signup')} className="text-teal-600 font-medium hover:text-teal-700">
+              Create one free
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   )

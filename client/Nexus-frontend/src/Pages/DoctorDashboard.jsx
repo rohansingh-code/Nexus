@@ -1,140 +1,141 @@
 import { useState, useEffect } from 'react'
 import { getDoctorAppointments } from '../api/agent'
-import { useAppStore } from '../store/useAppStore'
+
+function formatDT(iso) {
+  const d = new Date(iso)
+  return {
+    date: d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' }),
+    time: d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' }),
+    full: d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' }),
+  }
+}
 
 export default function DoctorDashboard() {
   const [appointments, setAppointments] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  
-  // A doctor might not have a full 'profile' endpoint yet, but their ID is in the token.
-  // We just fetch appointments.
+
   useEffect(() => {
-    async function loadDoctorData() {
-      try {
-        const apts = await getDoctorAppointments()
-        setAppointments(apts)
-      } catch (err) {
-        setError('Failed to fetch schedule from Nexus.')
-      } finally {
-        setLoading(false)
-      }
-    }
-    loadDoctorData()
+    getDoctorAppointments()
+      .then(setAppointments)
+      .catch(() => setError('Could not load your schedule. Please refresh.'))
+      .finally(() => setLoading(false))
   }, [])
 
-  // Simple sorting: upcoming vs past
   const now = new Date()
-  const upcomingAppointments = appointments.filter(a => new Date(a.appointmentTime) >= now)
-  const pastAppointments = appointments.filter(a => new Date(a.appointmentTime) < now)
+  const upcoming = appointments.filter(a => new Date(a.appointmentTime) >= now)
+    .sort((a, b) => new Date(a.appointmentTime) - new Date(b.appointmentTime))
+  const past = appointments.filter(a => new Date(a.appointmentTime) < now)
+    .sort((a, b) => new Date(b.appointmentTime) - new Date(a.appointmentTime))
+    .slice(0, 10)
 
-  if (loading) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 rounded-full border-t-2 border-teal-600 animate-spin"></div>
-          <span className="font-mono text-xs text-slate-500 uppercase tracking-widest">Loading Schedule...</span>
-        </div>
+  if (loading) return (
+    <div className="h-full flex items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-7 h-7 border-2 border-teal-600 border-t-transparent rounded-full animate-spin" />
+        <p className="text-slate-500 text-sm">Loading your schedule…</p>
       </div>
-    )
-  }
+    </div>
+  )
 
   return (
-    <div className="h-full overflow-y-auto p-4 md:p-8">
-      <div className="max-w-6xl mx-auto space-y-6 animate-fade-in">
-        
-        {/* Header */}
-        <div className="bento-glow rounded-3xl border border-slate-200 p-8 flex justify-between items-center"
-             style={{ background: 'linear-gradient(145deg, rgba(255,255,255,1), rgba(248,250,252,1))', backdropFilter: 'blur(20px)' }}>
-          <div className="flex items-center gap-6">
-             <div className="w-16 h-16 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center shadow-[0_0_20px_rgba(20,184,166,0.1)]">
-              <span className="material-symbols-outlined text-teal-400 text-3xl">stethoscope</span>
+    <div className="h-full overflow-y-auto" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');`}</style>
+      <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+
+        {/* Summary row */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            { label: 'Upcoming', value: upcoming.length, icon: 'schedule', color: 'text-teal-600 bg-teal-50' },
+            { label: 'Today', value: upcoming.filter(a => { const d = new Date(a.appointmentTime); return d.toDateString() === now.toDateString() }).length, icon: 'today', color: 'text-blue-600 bg-blue-50' },
+            { label: 'Completed', value: past.length, icon: 'check_circle', color: 'text-emerald-600 bg-emerald-50' },
+            { label: 'Total', value: appointments.length, icon: 'event_note', color: 'text-slate-600 bg-slate-100' },
+          ].map(({ label, value, icon, color }, i) => (
+            <div key={label} className="glass-card p-4 rounded-xl flex items-center gap-3 animate-fade-in" style={{ animationDelay: `${0.05 * i}s` }}>
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
+                <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: "'FILL' 1" }}>{icon}</span>
+              </div>
+              <div>
+                <p className="text-2xl font-semibold text-slate-900">{value}</p>
+                <p className="text-slate-500 text-xs">{label}</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-headline-md text-slate-800 mb-1">Doctor Command Center</h1>
-              <p className="font-mono text-xs text-slate-500 uppercase tracking-widest">
-                Live Schedule & Patient Overview
-              </p>
-            </div>
-          </div>
-          <div className="px-3 py-1.5 rounded-lg bg-teal-500/10 border border-teal-500/30 text-teal-400 font-mono text-[10px] tracking-widest flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></div>
-            ON SHIFT
-          </div>
+          ))}
         </div>
 
         {error && (
-           <div className="bento-glow p-4 border border-red-500/30 bg-red-500/10 rounded-xl text-red-400 font-mono text-sm">
-             {error}
-           </div>
+          <div className="flex items-center gap-2 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
+            <span className="material-symbols-outlined text-red-500" style={{ fontSize: 16 }}>error</span>
+            <p className="text-red-700 text-sm">{error}</p>
+          </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Upcoming Appointments */}
-          <div className="bento-glow rounded-3xl border border-slate-200 p-8 relative overflow-hidden"
-               style={{ background: 'linear-gradient(145deg, rgba(255,255,255,1), rgba(248,250,252,1))', backdropFilter: 'blur(20px)' }}>
-            <div className="absolute top-[-20%] left-[-10%] w-40 h-40 bg-teal-600/10 blur-[60px] rounded-full pointer-events-none"></div>
-            <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4 relative z-10">
-              <span className="material-symbols-outlined text-teal-500">schedule</span>
-              <h2 className="font-mono text-xs text-teal-500 tracking-widest uppercase">Today's Queue</h2>
-            </div>
-            
-            <div className="space-y-4 relative z-10">
-              {upcomingAppointments.length === 0 ? (
-                <p className="text-slate-500 font-mono text-xs italic">No upcoming appointments.</p>
-              ) : (
-                upcomingAppointments.map((apt, idx) => (
-                  <div key={apt.id} className={`border ${idx === 0 ? 'border-teal-600/40 bg-teal-600/10 shadow-[0_0_15px_rgba(13,148,136,0.1)]' : 'border-slate-100 bg-white shadow-sm'} rounded-xl p-5 transition-all group`}>
-                    <div className="flex justify-between items-start mb-3">
-                      <span className="text-slate-800 font-medium text-sm flex items-center gap-2">
-                        <span className="material-symbols-outlined text-[16px] text-slate-500 group-hover:text-teal-500 transition-colors">person</span>
-                        Patient ID: {apt.patientId}
-                      </span>
-                      <span className={`text-[10px] font-mono px-2 py-1 rounded border ${idx === 0 ? 'bg-teal-600/20 text-teal-500 border-teal-600/30' : 'bg-slate-50 text-slate-600 border-slate-200'}`}>
-                        {new Date(apt.appointmentTime).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
-                      </span>
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Upcoming */}
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-3">Upcoming appointments</h3>
+            {upcoming.length === 0 ? (
+              <div className="glass-panel border-dashed rounded-xl p-8 flex flex-col items-center text-center animate-fade-in">
+                <span className="material-symbols-outlined text-slate-300 mb-2" style={{ fontSize: 32 }}>calendar_today</span>
+                <p className="text-slate-500 text-sm">No upcoming appointments scheduled.</p>
+              </div>
+            ) : (
+              <div className="space-y-2.5">
+                {upcoming.map((apt, i) => {
+                  const { date, time } = formatDT(apt.appointmentTime)
+                  const isNext = i === 0
+                  return (
+                    <div key={apt.id}
+                      className={`glass-card p-4 rounded-xl animate-fade-in ${isNext ? 'border-teal-300 ring-1 ring-teal-100 bg-white/90' : ''}`} style={{ animationDelay: `${0.1 + i * 0.05}s` }}>
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          {isNext && <span className="inline-block text-[10px] font-semibold text-teal-700 bg-teal-100 border border-teal-200 px-2 py-0.5 rounded-full mb-2" style={{ fontFamily: "'DM Mono',monospace" }}>NEXT</span>}
+                          <p className="font-medium text-slate-900 text-sm">
+                            {apt.patientName ?? `Patient #${apt.patientId}`}
+                          </p>
+                          <p className="text-slate-500 text-xs mt-0.5">{apt.reason}</p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-slate-900 font-medium text-sm">{date}</p>
+                          <p className="text-slate-500 text-xs mt-0.5">{time}</p>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex justify-between items-center mt-2">
-                      <p className="text-sm text-slate-600 font-mono">{apt.reason}</p>
-                      <span className="font-mono text-[10px] tracking-widest text-slate-500 uppercase bg-white/50 px-2 py-1 rounded">SCHEDULED</span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
 
-          {/* Past Appointments */}
-          <div className="bento-glow rounded-3xl border border-slate-200 p-8"
-               style={{ background: 'linear-gradient(145deg, rgba(255,255,255,1), rgba(248,250,252,1))', backdropFilter: 'blur(20px)' }}>
-            <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
-              <span className="material-symbols-outlined text-slate-500">history</span>
-              <h2 className="font-mono text-xs text-slate-600 tracking-widest uppercase">Recent History</h2>
-            </div>
-
-            <div className="space-y-4">
-              {pastAppointments.length === 0 ? (
-                <p className="text-slate-500 font-mono text-xs italic">No past appointments.</p>
-              ) : (
-                pastAppointments.map(apt => (
-                  <div key={apt.id} className="border border-slate-100 bg-slate-50 rounded-xl p-5 hover:bg-slate-50 transition-colors">
-                    <div className="flex justify-between items-start mb-3">
-                      <span className="text-slate-700 font-medium text-sm flex items-center gap-2">
-                         <span className="material-symbols-outlined text-[16px] text-slate-400">person</span>
-                         Patient ID: {apt.patientId}
-                      </span>
-                      <span className="text-[10px] font-mono text-slate-500">
-                        {new Date(apt.appointmentTime).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
-                      </span>
+          {/* Past */}
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-3">Recent history</h3>
+            {past.length === 0 ? (
+              <div className="glass-panel border-dashed rounded-xl p-8 flex flex-col items-center text-center animate-fade-in">
+                <span className="material-symbols-outlined text-slate-300 mb-2" style={{ fontSize: 32 }}>history</span>
+                <p className="text-slate-500 text-sm">No past appointments yet.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {past.map(apt => {
+                  const { date, time } = formatDT(apt.appointmentTime)
+                  return (
+                    <div key={apt.id} className="bg-white/40 backdrop-blur-sm rounded-xl border border-white/50 shadow-sm px-4 py-3 flex items-center justify-between gap-3 animate-fade-in">
+                      <div>
+                        <p className="text-slate-700 font-medium text-sm">{apt.patientName ?? `Patient #${apt.patientId}`}</p>
+                        <p className="text-slate-400 text-xs mt-0.5">{apt.reason}</p>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-slate-500 text-xs">{date} · {time}</p>
+                        <span className="inline-block mt-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          Completed
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex justify-between items-center mt-2">
-                      <p className="text-sm text-slate-500 font-mono">{apt.reason}</p>
-                      <span className="font-mono text-[10px] tracking-widest text-teal-500 uppercase border border-teal-500/20 bg-teal-500/10 px-2 py-1 rounded">COMPLETED</span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
         </div>
 

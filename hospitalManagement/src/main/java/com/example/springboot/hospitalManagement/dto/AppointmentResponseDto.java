@@ -1,7 +1,6 @@
 package com.example.springboot.hospitalManagement.dto;
 
 import lombok.*;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -12,6 +11,7 @@ import java.time.LocalDateTime;
 public class AppointmentResponseDto {
     private Long id;
     private LocalDateTime appointmentTime;
+    private LocalDateTime appointmentEnd;
     private String reason;
     private DoctorResponseDto doctor;
 }

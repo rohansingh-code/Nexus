@@ -32,67 +32,63 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final ModelMapper modelMapper;
 
+    private static final int APPOINTMENT_DURATION_MINUTES = 30;
+
     @Transactional
     @Override
     public AppointmentResponseDto createNewAppointment(CreateAppointmentRequestDto dto, Long patientIdFromSecurity) {
         log.info("Booking request for Doctor ID: {} by secure Patient ID: {}", dto.getDoctorId(), patientIdFromSecurity);
 
-        // 1. Load Entities
-        // Load doctor from DTO
         Doctor doctor = doctorRepository.findById(dto.getDoctorId())
                 .orElseThrow(() -> new EntityNotFoundException("Doctor not found"));
-
 
         Patient patient = patientRepository.findById(patientIdFromSecurity)
                 .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
 
         LocalDateTime requestedTime = dto.getAppointmentTime();
+        LocalDateTime requestedEnd = requestedTime.plusMinutes(APPOINTMENT_DURATION_MINUTES);
 
-        // 2. Validation: Check Work Day
         DayOfWeek requestedDay = requestedTime.getDayOfWeek();
         if (!doctor.getWorkDays().contains(requestedDay)) {
             throw new IllegalStateException("Doctor " + doctor.getName() + " does not work on " + requestedDay);
         }
 
-        // 3. Validation: Check Shift Hours
         LocalTime timeOnly = requestedTime.toLocalTime();
         if (timeOnly.isBefore(doctor.getShiftStart()) || timeOnly.isAfter(doctor.getShiftEnd())) {
-            throw new IllegalStateException("Requested time " + timeOnly + " is outside the doctor's shift (" 
+            throw new IllegalStateException("Requested time " + timeOnly + " is outside the doctor's shift ("
                     + doctor.getShiftStart() + " - " + doctor.getShiftEnd() + ")");
         }
 
-        // 4. Validation: Check if the slot is already taken (Duplicate Check)
-        if (appointmentRepository.existsByDoctorAndAppointmentTime(doctor, requestedTime)) {
-            throw new SlotUnavailableException("The doctor is already booked for this time slot.");
+        if (appointmentRepository.existsOverlappingAppointment(doctor, requestedTime, requestedEnd)) {
+            throw new SlotUnavailableException(
+                "This slot overlaps with an existing appointment. Please choose a time at least "
+                + APPOINTMENT_DURATION_MINUTES + " minutes apart."
+            );
         }
 
-        // 5. Create Appointment
         Appointment appointment = Appointment.builder()
                 .reason(dto.getReason())
                 .appointmentTime(requestedTime)
+                .appointmentEnd(requestedEnd)
                 .doctor(doctor)
                 .patient(patient)
                 .build();
 
-        // 6. Save and Sync relationships
         appointment = appointmentRepository.save(appointment);
-        
-        // Update bidirectional relationships in current persistence context
+
         doctor.getAppointments().add(appointment);
         patient.getAppointments().add(appointment);
 
-        log.info("Successfully created appointment ID: {} for secure Patient: {}", appointment.getId(), patientIdFromSecurity);
+        log.info("Successfully created appointment ID: {} for Patient: {}", appointment.getId(), patientIdFromSecurity);
         return modelMapper.map(appointment, AppointmentResponseDto.class);
     }
 
     @Override
     public List<AppointmentResponseDto> getAllAppointmentsOfDoctor(Long doctorId) {
         log.info("Fetching all appointments for doctor ID: {}", doctorId);
-        
         if (!doctorRepository.existsById(doctorId)) {
             throw new EntityNotFoundException("Doctor not found");
         }
-
         return appointmentRepository.findByDoctorId(doctorId).stream()
                 .map(app -> modelMapper.map(app, AppointmentResponseDto.class))
                 .toList();
@@ -101,11 +97,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public List<AppointmentResponseDto> getAllAppointmentsOfPatient(Long patientId) {
         log.info("Fetching all appointments for patient ID: {}", patientId);
-        
         if (!patientRepository.existsById(patientId)) {
             throw new EntityNotFoundException("Patient not found");
         }
-
         return appointmentRepository.findByPatientId(patientId).stream()
                 .map(app -> modelMapper.map(app, AppointmentResponseDto.class))
                 .toList();

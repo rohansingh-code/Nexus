@@ -86,23 +86,40 @@ The agent communicates structured intent through embedded tags in its response t
 
 ---
 
+## 📁 Project Structure
+
+```
+nexus/
+├── hospitalManagement/  # Gateway: auth, RBAC, patients, appointments
+├── ai-service/          # Agent: reasoning loop, tool registry, session state
+├── client/              # Frontend: React.js user interface
+├── docker-compose.yml
+└── .env.example
+```
+
+---
+
 ## ⚙️ Environment Configuration
 
 Ensure the following variables are defined in your `.env` file at the root:
 
 ```bash
 # -- Shared / Database --
+POSTGRES_DB=hospital_db
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_secure_password
 DB_URL=jdbc:postgresql://postgres:5432/hospital_db
 DB_USERNAME=postgres
-DB_PASSWORD=your_password
+DB_PASSWORD=your_secure_password
 
 # -- Intelligence Service (ai-service) --
 GROQ_API_KEY=your_groq_api_key
 HOSPITAL_SERVICE_URL=http://hospital-app:8080
 REDIS_HOST=redis
+REDIS_PORT=6379
 
 # -- Gateway Service (hospitalManagement) --
-JWT_SECRETKEY=your_secret_min_256_bits
+JWT_SECRETKEY=your_secret_key
 AI_SERVICE_URL=http://hospital-ai:8081
 ```
 
@@ -136,6 +153,7 @@ nexus/
 
 | Layer | Technology |
 | :--- | :--- |
+| Frontend | React.js (Vite) |
 | Agent Runtime | Spring AI + Groq (LLaMA 3) |
 | Gateway | Spring Boot, Spring Security, JWT |
 | Persistence | PostgreSQL (JPA/Hibernate) |

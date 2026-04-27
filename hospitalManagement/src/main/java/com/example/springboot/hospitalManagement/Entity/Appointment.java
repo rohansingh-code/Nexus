@@ -2,7 +2,6 @@ package com.example.springboot.hospitalManagement.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,17 +11,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Table(
-    name = "appointment",
-    uniqueConstraints = {
-        @UniqueConstraint(
-            name = "uk_doctor_time",
-            columnNames = {"doctor_id", "appointment_time"}
-        )
-    }
-)
+@Table(name = "appointment")
 public class Appointment {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +20,9 @@ public class Appointment {
 
     @Column(name = "appointment_time", nullable = false)
     private LocalDateTime appointmentTime;
+
+    @Column(name = "appointment_end", nullable = false)
+    private LocalDateTime appointmentEnd;
 
     @Column(length = 500)
     private String reason;

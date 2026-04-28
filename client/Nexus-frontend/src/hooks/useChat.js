@@ -48,36 +48,37 @@ export function useChat() {
     }
   }, [isTyping, addMessage])
 
-  const confirmBooking = useCallback(async (bookingReady) => {
-    setBookingStatus('confirming')
-    try {
-      await bookAppointment({
-        doctorId: bookingReady.doctorId,
-        appointmentTime: `${bookingReady.date}T${bookingReady.time}:00`,
-        reason: bookingReady.reason,
-      })
-      setBookingStatus('success')
-      await clearSession({ sessionId: sessionId.current })
+  
+const confirmBooking = useCallback(async (bookingReady) => {
+  setBookingStatus('confirming')
+  try {
+    await bookAppointment({
+      doctorId: bookingReady.doctorId,
+      appointmentTime: `${bookingReady.date}T${bookingReady.time}:00`,
+      reason: bookingReady.reason,
+    })
+    setBookingStatus('success')
+    await clearSession({ sessionId: sessionId.current })
+    addMessage({
+      role: 'ai',
+      content: `Your appointment has been confirmed! You'll see ${bookingReady.doctorName ?? 'your doctor'} on ${bookingReady.date} at ${bookingReady.time}.`,
+      doctorList: null,
+      bookingReady: null,
+    })
+  } catch (e) {
+    if (e.message === 'SLOT_TAKEN') {
+      setBookingStatus(null)
       addMessage({
         role: 'ai',
-        content: `Your appointment has been confirmed! You'll see Dr. ${bookingReady.doctorId} on ${bookingReady.date} at ${bookingReady.time}.`,
+        content: 'That slot was just taken by someone else. Could you suggest a different date or time?',
         doctorList: null,
         bookingReady: null,
       })
-    } catch (e) {
-      if (e.message === 'SLOT_TAKEN') {
-        setBookingStatus(null)
-        addMessage({
-          role: 'ai',
-          content: 'That slot was just taken by someone else. Could you suggest a different date or time?',
-          doctorList: null,
-          bookingReady: null,
-        })
-      } else {
-        setBookingStatus('error')
-      }
+    } else {
+      setBookingStatus('error')
     }
-  }, [addMessage])
+  }
+}, [addMessage])
 
   const newChat = useCallback(async () => {
     await clearSession({ sessionId: sessionId.current })

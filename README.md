@@ -55,12 +55,12 @@ User Input
          └──────────► Loop back to PLAN
 ```
 
-### Agent Action Tags
+### Agent Action Signals
 
-The agent communicates structured intent through embedded tags in its response text. The client treats these as executable signals:
+The agent communicates structured intent through JSON response keys. The client treats these as executable signals:
 
-- `[DOCTORS: {...}]`: Client renders a doctor selection card UI.
-- `[BOOKING_READY: {...}]`: Client fires `POST /api/v1/patients/appointments` with the automatically constructed payload.
+- `"doctorList"`: Array of doctor objects. Client renders an interactive doctor selection UI.
+- `"bookingReady"`: Encodes target booking payloads. Client executes the background schedule transaction.
 
 ---
 

@@ -33,7 +33,7 @@ export default function BookingConfirm({ bookingReady, onConfirm, onCancel, stat
       <div className="grid grid-cols-2 gap-4 mb-8">
         <div className="flex flex-col gap-1 terminal-line pl-3">
           <span className="font-mono text-[9px] text-slate-400 uppercase tracking-widest font-bold">Specialist</span>
-          <span className="text-slate-800 text-xs font-mono">Dr. Sharma</span>
+          <span className="text-slate-800 text-xs font-mono">{bookingReady.doctorName ?? `Dr. #${bookingReady.doctorId}`}</span>
         </div>
         <div className="flex flex-col gap-1 terminal-line pl-3">
           <span className="font-mono text-[9px] text-slate-400 uppercase tracking-widest font-bold">Slot_Time</span>

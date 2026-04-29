@@ -3,6 +3,7 @@ package com.example.springboot.hospitalManagement.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import com.example.springboot.hospitalManagement.Entity.type.AppointmentStatus;
 
 @Entity
 @Getter
@@ -34,4 +35,9 @@ public class Appointment {
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    @Builder.Default
+    private AppointmentStatus status = AppointmentStatus.SCHEDULED;
 }

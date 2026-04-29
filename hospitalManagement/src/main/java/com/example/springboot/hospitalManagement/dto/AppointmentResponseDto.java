@@ -14,4 +14,9 @@ public class AppointmentResponseDto {
     private LocalDateTime appointmentEnd;
     private String reason;
     private DoctorResponseDto doctor;
+    private Long patientId;
+    private String patientName;
+    private Long doctorId;
+    private String doctorName;
+    private String status;
 }

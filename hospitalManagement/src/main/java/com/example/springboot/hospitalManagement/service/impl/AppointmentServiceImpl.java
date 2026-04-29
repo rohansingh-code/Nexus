@@ -80,7 +80,13 @@ public class AppointmentServiceImpl implements AppointmentService {
         patient.getAppointments().add(appointment);
 
         log.info("Successfully created appointment ID: {} for Patient: {}", appointment.getId(), patientIdFromSecurity);
-        return modelMapper.map(appointment, AppointmentResponseDto.class);
+        AppointmentResponseDto responseDto = modelMapper.map(appointment, AppointmentResponseDto.class);
+        responseDto.setPatientId(patient.getId());
+        responseDto.setPatientName(patient.getName());
+        responseDto.setDoctorId(doctor.getId());
+        responseDto.setDoctorName(doctor.getName());
+        responseDto.setStatus(appointment.getStatus() != null ? appointment.getStatus().name() : "SCHEDULED");
+        return responseDto;
     }
 
     @Override
@@ -90,7 +96,15 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new EntityNotFoundException("Doctor not found");
         }
         return appointmentRepository.findByDoctorId(doctorId).stream()
-                .map(app -> modelMapper.map(app, AppointmentResponseDto.class))
+                .map(app -> {
+                    AppointmentResponseDto responseDto = modelMapper.map(app, AppointmentResponseDto.class);
+                    responseDto.setPatientId(app.getPatient().getId());
+                    responseDto.setPatientName(app.getPatient().getName());
+                    responseDto.setDoctorId(app.getDoctor().getId());
+                    responseDto.setDoctorName(app.getDoctor().getName());
+                    responseDto.setStatus(app.getStatus() != null ? app.getStatus().name() : "SCHEDULED");
+                    return responseDto;
+                })
                 .toList();
     }
 
@@ -101,7 +115,15 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new EntityNotFoundException("Patient not found");
         }
         return appointmentRepository.findByPatientId(patientId).stream()
-                .map(app -> modelMapper.map(app, AppointmentResponseDto.class))
+                .map(app -> {
+                    AppointmentResponseDto responseDto = modelMapper.map(app, AppointmentResponseDto.class);
+                    responseDto.setPatientId(app.getPatient().getId());
+                    responseDto.setPatientName(app.getPatient().getName());
+                    responseDto.setDoctorId(app.getDoctor().getId());
+                    responseDto.setDoctorName(app.getDoctor().getName());
+                    responseDto.setStatus(app.getStatus() != null ? app.getStatus().name() : "SCHEDULED");
+                    return responseDto;
+                })
                 .toList();
     }
 }

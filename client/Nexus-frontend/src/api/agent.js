@@ -17,6 +17,17 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 )
 
+// Add a response interceptor
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      useAppStore.getState().logout()
+    }
+    return Promise.reject(error)
+  }
+)
+
 export async function sendMessage({ message, sessionId }) {
   const { data } = await api.post('/ai/query', { message, sessionId })
   return data

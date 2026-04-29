@@ -19,24 +19,23 @@ export default function MainLayout() {
 
   const getNavItems = () => {
     const items = []
-    if (roles.includes('PATIENT')) {
-      items.push({ to: '/dashboard', icon: 'person', label: 'My Profile' })
-      items.push({ to: '/chat', icon: 'chat_bubble', label: 'Book Appointment' })
-    }
-    if (roles.includes('DOCTOR')) {
-      items.push({ to: '/doctor-dashboard', icon: 'calendar_month', label: 'My Schedule' })
-    }
     if (roles.includes('ADMIN')) {
       items.push({ to: '/admin', icon: 'shield_person', label: 'Admin Panel' })
+    } else if (roles.includes('DOCTOR')) {
+      items.push({ to: '/doctor-dashboard', icon: 'calendar_month', label: 'My Schedule' })
+    } else if (roles.includes('PATIENT')) {
+      items.push({ to: '/dashboard', icon: 'person', label: 'My Profile' })
+      items.push({ to: '/chat', icon: 'chat_bubble', label: 'Book Appointment' })
     }
     return items
   }
 
+  const primaryRole = roles.includes('ADMIN') ? 'ADMIN' : roles.includes('DOCTOR') ? 'DOCTOR' : 'PATIENT'
   const navItems = getNavItems()
   const pageTitle = ROUTE_LABELS[location.pathname] ?? 'Nexus'
   const initials = user?.name
     ? user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
-    : roles[0]?.[0] ?? 'N'
+    : primaryRole[0] ?? 'N'
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -121,7 +120,7 @@ export default function MainLayout() {
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-emerald-700 text-xs font-medium" style={{ fontFamily: "'DM Mono', monospace" }}>
-                {roles[0]?.charAt(0) + roles[0]?.slice(1).toLowerCase()}
+                {primaryRole.charAt(0) + primaryRole.slice(1).toLowerCase()}
               </span>
             </div>
             {/* Avatar */}

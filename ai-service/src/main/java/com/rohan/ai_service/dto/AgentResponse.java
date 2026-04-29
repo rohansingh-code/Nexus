@@ -38,6 +38,7 @@ public class AgentResponse {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class BookingReady {
         private Long doctorId;
+        private String doctorName;
         private String date;
         private String time;
         private String reason;

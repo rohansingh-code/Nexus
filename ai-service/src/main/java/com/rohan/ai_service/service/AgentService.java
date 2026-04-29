@@ -123,7 +123,7 @@ private String buildSystemPrompt() {
             Step 3 — When user picks a doctor:
               - Confirm the booking details in "message"
               - Set "bookingReady" to:
-                {"doctorId": <id>, "date": "<YYYY-MM-DD>", "time": "<HH:MM>", "reason": "<original symptoms>"}
+                {"doctorId": <id>, "doctorName": "<name>", "date": "<YYYY-MM-DD>", "time": "<HH:MM>", "reason": "<original symptoms>"}
               - Set "doctorList" to null
 
             If symptoms are an emergency: set "message" to advise calling emergency

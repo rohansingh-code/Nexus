@@ -29,7 +29,7 @@ public ResponseEntity<AgentResponse> query(
     }
 }
 
-    // frontend calls this after successful booking or new chat
+
     @DeleteMapping("/session/{sessionId}")
     public ResponseEntity<Void> clearSession(@PathVariable String sessionId) {
         agentService.clearSession(sessionId);

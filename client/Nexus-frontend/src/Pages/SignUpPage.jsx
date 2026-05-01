@@ -37,7 +37,7 @@ export default function SignUpPage() {
       <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap');`}</style>
 
       <div className="w-full max-w-lg">
-        {/* Header */}
+
         <div className="text-center mb-8">
           <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center mx-auto mb-4">
             <span className="material-symbols-outlined text-white" style={{ fontSize: 18, fontVariationSettings: "'FILL' 1" }}>local_hospital</span>
@@ -49,7 +49,7 @@ export default function SignUpPage() {
         <div className="glass-panel rounded-2xl p-8 animate-fade-in">
           <form onSubmit={handleSignUp} className="space-y-5">
 
-            {/* Name + Email */}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className={labelCls}>Full name</label>
@@ -63,7 +63,7 @@ export default function SignUpPage() {
               </div>
             </div>
 
-            {/* Password */}
+
             <div>
               <label className={labelCls}>Password</label>
               <input type="password" required minLength={8} placeholder="Minimum 8 characters"
@@ -76,7 +76,7 @@ export default function SignUpPage() {
               )}
             </div>
 
-            {/* DOB + Gender */}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className={labelCls}>Date of birth</label>
@@ -93,7 +93,7 @@ export default function SignUpPage() {
               </div>
             </div>
 
-            {/* Blood group */}
+
             <div>
               <label className={labelCls}>Blood group</label>
               <select value={form.bloodGroup} onChange={e => f('bloodGroup', e.target.value)} className={inputCls}>

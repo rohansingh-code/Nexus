@@ -39,11 +39,11 @@ export default function ChatPage() {
       <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');`}</style>
 
       <div className="flex-1 flex overflow-hidden">
-        {/* ── Main Chat Area ── */}
+
         <div className="flex-1 flex flex-col min-w-0">
           <div className="flex-1 overflow-y-auto bg-white/30">
             {isEmpty ? (
-              /* ── Blank / greeting state ── */
+
               <div className="h-full flex flex-col items-center justify-center px-6 py-12 text-center animate-fade-in max-w-2xl mx-auto">
                 <div className="w-16 h-16 rounded-2xl bg-teal-600 flex items-center justify-center mb-6 shadow-lg shadow-teal-500/20">
                   <span className="material-symbols-outlined text-white" style={{ fontSize: 28, fontVariationSettings: "'FILL' 1" }}>local_hospital</span>
@@ -63,9 +63,9 @@ export default function ChatPage() {
                 </div>
               </div>
             ) : (
-              /* ── Messages ── */
+
               <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-                {/* Session chip */}
+
                 <div className="flex justify-center">
                   <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200">
                     <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 12 }}>lock</span>
@@ -88,7 +88,7 @@ export default function ChatPage() {
             )}
           </div>
 
-          {/* ── Input bar ── */}
+
           <div className="bg-white/80 backdrop-blur-md border-t border-slate-200 px-4 py-6 relative z-10">
             <div className="max-w-4xl mx-auto">
               <div className="flex items-end gap-2 bg-white/80 border border-white focus-within:border-teal-400/50 focus-within:ring-4 focus-within:ring-teal-500/5 rounded-2xl px-3 py-2 transition-all shadow-sm">
@@ -112,7 +112,7 @@ export default function ChatPage() {
           </div>
         </div>
 
-        {/* ── Suggestions Sidebar (Visible only when not empty or on wide screens) ── */}
+
         <aside className="w-80 bg-white/50 backdrop-blur-sm border-l border-slate-200 flex flex-col p-6 overflow-y-auto hidden lg:flex">
           <div className="flex items-center gap-2 mb-6 text-slate-900">
             <span className="material-symbols-outlined text-teal-600" style={{ fontSize: 20 }}>lightbulb</span>

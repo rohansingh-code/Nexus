@@ -66,7 +66,7 @@ export default function PatientDashboard() {
       <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');`}</style>
       <div className="max-w-4xl mx-auto px-6 py-8 space-y-6">
 
-        {/* Profile card */}
+
         <div className="glass-card rounded-2xl p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 animate-fade-in">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-teal-600 flex items-center justify-center text-white text-xl font-semibold flex-shrink-0">
@@ -88,7 +88,7 @@ export default function PatientDashboard() {
           </button>
         </div>
 
-        {/* Upcoming appointments */}
+
         <div>
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold text-slate-900">Upcoming appointments</h3>
@@ -134,7 +134,7 @@ export default function PatientDashboard() {
           )}
         </div>
 
-        {/* Past appointments */}
+
         {past.length > 0 && (
           <div>
             <h3 className="font-semibold text-slate-900 mb-3">Past appointments</h3>

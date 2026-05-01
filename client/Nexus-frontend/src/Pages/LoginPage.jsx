@@ -29,7 +29,7 @@ export default function LoginPage() {
     <div className="min-h-screen mesh-bg-subtle flex" style={{ fontFamily: "'DM Sans', sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');`}</style>
 
-      {/* Left panel */}
+
       <div className="hidden md:flex w-1/2 bg-teal-600 flex-col justify-between p-12">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -52,10 +52,10 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right panel — form */}
+
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 glass-panel">
         <div className="w-full max-w-sm animate-fade-in">
-          {/* Mobile logo */}
+
           <div className="flex items-center gap-2 mb-8 md:hidden">
             <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center">
               <span className="material-symbols-outlined text-white" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1" }}>local_hospital</span>

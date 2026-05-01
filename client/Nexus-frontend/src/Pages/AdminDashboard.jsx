@@ -73,7 +73,7 @@ export default function AdminDashboard() {
       <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');`}</style>
       <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
 
-        {/* Page header */}
+
         <div className="flex items-center justify-between animate-fade-in">
           <div>
             <h1 className="text-xl font-semibold text-slate-900">Admin Panel</h1>
@@ -85,7 +85,7 @@ export default function AdminDashboard() {
           </span>
         </div>
 
-        {/* Tabs */}
+
         <div className="flex gap-1 glass-panel p-1 rounded-xl w-fit animate-fade-in">
           {TABS.map(t => (
             <button key={t.id} onClick={() => { setTab(t.id); setMsg({ type: '', text: '' }) }}
@@ -98,7 +98,7 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {/* Toast messages */}
+
         {msg.text && (
           <div className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border text-sm ${
             msg.type === 'error'
@@ -112,7 +112,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* ── ONBOARD TAB ── */}
+
         {tab === 'onboard' && (
           <div className="glass-panel rounded-2xl p-8 animate-fade-in">
             <h2 className="font-semibold text-slate-900 mb-6">Add a new doctor</h2>
@@ -182,7 +182,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* ── PATIENTS TAB ── */}
+
         {tab === 'patients' && (
           <div className="glass-panel rounded-2xl p-6 animate-fade-in">
             <div className="flex items-center justify-between mb-4 gap-4">
@@ -222,7 +222,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* ── DOCTORS TAB ── */}
+
         {tab === 'doctors' && (
           <div className="glass-panel rounded-2xl p-6 animate-fade-in">
             <div className="flex items-center justify-between mb-4 gap-4">

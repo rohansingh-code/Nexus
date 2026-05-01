@@ -52,7 +52,7 @@ export default function LandingPage() {
         @media (prefers-reduced-motion:reduce) { * { animation:none !important; } }
       `}</style>
 
-      {/* ── Nav ── */}
+
       <nav className="sticky top-0 z-50 glass-panel border-b border-white/50">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -74,7 +74,7 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* ── Hero ── */}
+
       <section className="max-w-5xl mx-auto px-6 pt-20 pb-16">
         <div className="f1 flex items-center gap-2 mb-6">
           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -102,9 +102,9 @@ export default function LandingPage() {
           </button>
         </div>
 
-        {/* ── Demo terminal ── */}
+
         <div className="f5 glass-card overflow-hidden">
-          {/* title bar */}
+
           <div className="flex items-center gap-2 px-4 py-3 bg-white/40 border-b border-white/50">
             <div className="flex gap-1.5">
               <div className="w-3 h-3 rounded-full bg-red-400" />
@@ -113,7 +113,7 @@ export default function LandingPage() {
             </div>
             <span className="text-slate-400 text-xs ml-2" style={{ fontFamily: "'DM Mono',monospace" }}>nexus — triage session</span>
           </div>
-          {/* chat preview */}
+
           <div className="bg-white px-6 py-6 space-y-4">
             <div className="flex gap-3 items-start">
               <div className="w-7 h-7 rounded-full bg-teal-600 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -139,7 +139,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── How it works ── */}
+
       <section className="bg-white/40 backdrop-blur-md border-y border-white/60 py-20 relative z-10 shadow-sm">
         <div className="max-w-5xl mx-auto px-6">
           <p className="text-teal-600 text-xs font-semibold uppercase tracking-widest mb-3" style={{ fontFamily: "'DM Mono',monospace" }}>How it works</p>
@@ -167,7 +167,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Features grid ── */}
+
       <section className="max-w-5xl mx-auto px-6 py-20">
         <p className="text-teal-600 text-xs font-semibold uppercase tracking-widest mb-3" style={{ fontFamily: "'DM Mono',monospace" }}>Built different</p>
         <h2 className="text-3xl font-semibold text-slate-900 mb-10">Everything you need, nothing you don't</h2>
@@ -189,7 +189,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── CTA ── */}
+
       <section className="bg-teal-600 py-16">
         <div className="max-w-2xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-semibold text-white mb-4">Ready to book your first appointment?</h2>
@@ -204,7 +204,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Footer ── */}
+
       <footer className="border-t border-slate-100 py-8">
         <div className="max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">

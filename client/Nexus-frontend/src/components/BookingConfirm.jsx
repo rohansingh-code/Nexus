@@ -10,10 +10,10 @@ export default function BookingConfirm({ bookingReady, onConfirm, onCancel, stat
         backdropFilter: 'blur(16px)',
       }}
     >
-      {/* Background Glow */}
+
       <div className="absolute -top-10 -right-10 w-32 h-32 bg-teal-600/10 blur-3xl rounded-full pointer-events-none" />
       
-      {/* Header / Badge Style */}
+
       <div className="flex items-center justify-between mb-6 border-b border-slate-100 pb-4">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-teal-600/10 border border-teal-600/30 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.1)]">
@@ -29,7 +29,7 @@ export default function BookingConfirm({ bookingReady, onConfirm, onCancel, stat
         </div>
       </div>
 
-      {/* Data Grid */}
+
       <div className="grid grid-cols-2 gap-4 mb-8">
         <div className="flex flex-col gap-1 terminal-line pl-3">
           <span className="font-mono text-[9px] text-slate-400 uppercase tracking-widest font-bold">Specialist</span>
@@ -52,7 +52,7 @@ export default function BookingConfirm({ bookingReady, onConfirm, onCancel, stat
         </div>
       )}
 
-      {/* Actions */}
+
       <div className="flex gap-4 items-center justify-end border-t border-slate-100 pt-6">
         <button
           onClick={onCancel}

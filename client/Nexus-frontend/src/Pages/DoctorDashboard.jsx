@@ -43,7 +43,7 @@ export default function DoctorDashboard() {
       <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');`}</style>
       <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
 
-        {/* Summary row */}
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
             { label: 'Upcoming', value: upcoming.length, icon: 'schedule', color: 'text-teal-600 bg-teal-50' },
@@ -71,7 +71,7 @@ export default function DoctorDashboard() {
         )}
 
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Upcoming */}
+
           <div>
             <h3 className="font-semibold text-slate-900 mb-3">Upcoming appointments</h3>
             {upcoming.length === 0 ? (
@@ -107,7 +107,7 @@ export default function DoctorDashboard() {
             )}
           </div>
 
-          {/* Past */}
+
           <div>
             <h3 className="font-semibold text-slate-900 mb-3">Recent history</h3>
             {past.length === 0 ? (

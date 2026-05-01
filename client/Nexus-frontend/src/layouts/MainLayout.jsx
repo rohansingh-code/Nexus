@@ -52,9 +52,9 @@ export default function MainLayout() {
         .fade-up { animation: fadeUp 0.3s ease forwards; }
       `}</style>
 
-      {/* ── Desktop Sidebar (240px) ── */}
+
       <nav className="hidden md:flex w-60 h-full bg-white border-r border-slate-200 flex-col py-6 z-50 flex-shrink-0 shadow-sm">
-        {/* Brand */}
+
         <div className="px-6 mb-8 flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-teal-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-teal-500/20">
             <span className="material-symbols-outlined text-white" style={{ fontSize: 20, fontVariationSettings: "'FILL' 1" }}>local_hospital</span>
@@ -65,7 +65,7 @@ export default function MainLayout() {
           </div>
         </div>
 
-        {/* Nav links */}
+
         <div className="flex flex-col gap-1.5 flex-1 w-full px-3">
           {navItems.map(item => (
             <NavLink key={item.to} to={item.to}
@@ -89,7 +89,7 @@ export default function MainLayout() {
           ))}
         </div>
 
-        {/* Bottom actions */}
+
         <div className="px-3 border-t border-slate-100 pt-6">
           <button onClick={handleLogout}
             className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-600 transition-all">
@@ -99,10 +99,10 @@ export default function MainLayout() {
         </div>
       </nav>
 
-      {/* ── Right column ── */}
+
       <div className="flex-1 flex flex-col overflow-hidden">
 
-        {/* Topbar */}
+
         <header className="h-16 bg-white/95 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 flex-shrink-0 z-40">
           <div className="flex items-center gap-3">
             <h1 className="text-slate-900 font-semibold text-sm">{pageTitle}</h1>
@@ -116,26 +116,26 @@ export default function MainLayout() {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Live status */}
+
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-emerald-700 text-xs font-medium" style={{ fontFamily: "'DM Mono', monospace" }}>
                 {primaryRole.charAt(0) + primaryRole.slice(1).toLowerCase()}
               </span>
             </div>
-            {/* Avatar */}
+
             <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-white text-xs font-semibold cursor-pointer">
               {initials}
             </div>
           </div>
         </header>
 
-        {/* Page content */}
+
         <main className="flex-1 overflow-hidden pb-16 md:pb-0">
           <Outlet />
         </main>
 
-        {/* ── Mobile Bottom Navigation ── */}
+
         <nav className="md:hidden h-16 bg-white/95 backdrop-blur-md border-t border-slate-200 flex items-center justify-around px-4 z-50">
           {navItems.map(item => (
             <NavLink key={item.to} to={item.to}

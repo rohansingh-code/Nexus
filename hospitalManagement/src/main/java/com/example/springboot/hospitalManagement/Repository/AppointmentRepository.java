@@ -14,10 +14,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     // Check if exact same time slot exists
     boolean existsByDoctorAndAppointmentTime(Doctor doctor, LocalDateTime appointmentTime);
 
-    // Get all appointments for a doctor
+
     List<Appointment> findByDoctorId(Long doctorId);
 
-    // Get all appointments for a patient
+
     List<Appointment> findByPatientId(Long patientId);
 
     // Check overlapping appointments

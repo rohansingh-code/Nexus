@@ -19,6 +19,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ConversationStore {
 
+    private static final int MAX_MESSAGE_HISTORY = 15;
+
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
 
@@ -27,7 +29,7 @@ public class ConversationStore {
 
     public List<Message> getHistory(String sessionId) {
         String key = PREFIX + sessionId;
-        List<String> raw = redisTemplate.opsForList().range(key, 0, -1);
+        List<String> raw = redisTemplate.opsForList().range(key, -MAX_MESSAGE_HISTORY, -1);
 
         if (raw == null || raw.isEmpty()) return new ArrayList<>();
 
@@ -56,6 +58,7 @@ public class ConversationStore {
                 Map.of("role", role, "content", content)
             );
             redisTemplate.opsForList().rightPush(key, entry);
+            redisTemplate.opsForList().trim(key, -MAX_MESSAGE_HISTORY, -1);
             redisTemplate.expire(key, TTL);
         } catch (Exception e) {
             log.error("Failed to store message in Redis for session {}: {}", sessionId, e.getMessage());

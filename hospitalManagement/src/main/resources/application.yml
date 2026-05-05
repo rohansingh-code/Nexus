@@ -25,6 +25,10 @@ spring:
 jwt:
   secretKey: ${JWT_SECRETKEY}
 
+app:
+  access-token-expiry-ms: 600000
+  refresh-token-expiry-ms: 604800000
+
 server:
   port: 8080
   servlet:

@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
+import { serverLogout } from '../api/agent'
 
 const ROUTE_LABELS = {
   '/dashboard': 'My Profile',
@@ -15,7 +16,7 @@ export default function MainLayout() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const handleLogout = () => { logout(); navigate('/') }
+  const handleLogout = async () => { await serverLogout(); logout(); navigate('/'); }
 
   const getNavItems = () => {
     const items = []

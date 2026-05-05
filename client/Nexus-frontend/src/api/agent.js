@@ -3,6 +3,7 @@ import { useAppStore } from '../store/useAppStore'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1',
+  withCredentials: true,
 })
 
 // Add a request interceptor
@@ -20,13 +21,31 @@ api.interceptors.request.use(
 // Add a response interceptor
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      useAppStore.getState().logout()
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry && originalRequest.url !== '/auth/login') {
+      originalRequest._retry = true;
+      try {
+        const { data } = await axios.post(`${api.defaults.baseURL}/auth/refresh`, {}, { withCredentials: true });
+        useAppStore.getState().setAuth(data.token, data.roles);
+        originalRequest.headers.Authorization = `Bearer ${data.token}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        useAppStore.getState().logout();
+        return Promise.reject(refreshError);
+      }
+    } else if (error.response?.status === 401) {
+      useAppStore.getState().logout();
     }
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
 )
+
+export async function serverLogout() {
+  try {
+    await api.post('/auth/logout')
+  } catch { /* silent fail */ }
+}
 
 export async function sendMessage({ message, sessionId }) {
   const { data } = await api.post('/ai/query', { message, sessionId })

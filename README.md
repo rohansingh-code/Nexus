@@ -14,7 +14,7 @@ The system is architected as a decoupled microservices environment orchestrated 
 - **Intelligence Service (`ai-service`)**: A specialized Spring AI microservice that executes reasoning loops, tool-calling (via Groq), and session-based state management.
 - **State Layer**: 
     - **PostgreSQL**: Hard persistence for users, doctors, and appointments.
-    - **Redis**: High-speed ephemeral storage for AI conversation history and triage states.
+    - **Redis**: High-speed ephemeral storage for AI conversation history, triage states, and JWT refresh tokens.
 
 ---
 
@@ -70,7 +70,9 @@ The agent communicates structured intent through JSON response keys. The client 
 | Endpoint | Method | Auth | Description |
 | :--- | :--- | :--- | :--- |
 | `/api/v1/auth/signup` | `POST` | Public | Register a new patient |
-| `/api/v1/auth/login` | `POST` | Public | Authenticate and receive a JWT |
+| `/api/v1/auth/login` | `POST` | Public | Authenticate and receive an Access Token and HttpOnly Refresh Token |
+| `/api/v1/auth/refresh` | `POST` | Cookie | Refresh access token using HttpOnly Refresh Token cookie |
+| `/api/v1/auth/logout` | `POST` | Cookie | Invalidate refresh token and clear cookie |
 
 ### 2. AI Interface (`hospital-app` -> `ai-service`)
 | Endpoint | Method | Auth | Description |
